@@ -67,7 +67,9 @@ window.SITE = {
       tech:      ["Lean Manufacturing", "Kaizen", "OEE", "Production KPI"],
       link:      "https://www.linkedin.com/in/wisnu-pandu-hidayat-6a7468257",
       repo:      "",
-      cover:     ""
+      cover:     "",
+      date:      "2025-03-15",   // tanggal kegiatan (format YYYY-MM-DD)
+      photo:     ""              // foto proyek (diisi lewat admin; base64 data URL atau URL)
     },
     {
       title:       "Pembangunan Pabrik Baru & Instalasi Alat",
@@ -76,7 +78,9 @@ window.SITE = {
       tech:      ["Production Planning", "Capacity Planning", "Inventory Analysis", "SAP S/4 HANA"],
       link:      "https://www.linkedin.com/in/wisnu-pandu-hidayat-6a7468257",
       repo:      "",
-      cover:     ""
+      cover:     "",
+      date:      "2024-11-05",   // tanggal kegiatan
+      photo:     ""              // foto proyek
     }
   ],
 

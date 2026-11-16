@@ -123,15 +123,28 @@
     if (!projects.length) {
       return '<section class="section" id="proyek"><div class="wrap"><div class="section-head"><span class="badge">Proyek</span><h2>Proyek</h2><p style="color:#8a8a8a;">Belum ada proyek yang ditambahkan.</p></div></section>';
     }
-    var cards = projects.map(function (p, i) {
+    // filter by date if ?date=YYYY-MM-DD is in the URL
+    var urlParams = new URLSearchParams(window.location.search);
+    var filterDate = urlParams.get("date");
+    var filtered = filterDate ? projects.filter(function (p) { return (p.date || "").toLowerCase() === filterDate.toLowerCase(); }) : projects;
+
+    var cards = filtered.map(function (p, i) {
+      var photoHtml = "";
+      if (p.photo) {
+        photoHtml = '<div class="project-photo"><img src="' + escapeHtml(p.photo) + '" alt=""></div>';
+      }
       return (
         '<div class="project-card">' +
-          '<div class="title">' + escapeHtml(p.title || "Proyek " + (i + 1)) + '</div>' +
-          '<div class="tech">' + techTags(p) + '</div>' +
-          '<p>' + escapeHtml(p.description || "") + '</p>' +
-          '<div class="hero-actions" style="margin-top:14px;">' +
-            '<a class="btn btn-outline" href="' + safeUrl(p.link) + '" target="_blank" rel="noopener">Lihat Situs</a>' +
-            '<a class="btn btn-outline" href="' + safeUrl(p.repo) + '" target="_blank" rel="noopener">Kode Sumber</a>' +
+          photoHtml +
+          '<div class="project-body">' +
+            '<div class="title">' + escapeHtml(p.title || "Proyek " + (i + 1)) + '</div>' +
+            '<div class="tech">' + techTags(p) + '</div>' +
+            '<p class="date">Tanggal: ' + escapeHtml(p.date || "") + '</p>' +
+            '<p>' + escapeHtml(p.description || "") + '</p>' +
+            '<div class="hero-actions" style="margin-top:14px;">' +
+              '<a class="btn btn-outline" href="' + safeUrl(p.link) + '" target="_blank" rel="noopener">Lihat Situs</a>' +
+              '<a class="btn btn-outline" href="' + safeUrl(p.repo) + '" target="_blank" rel="noopener">Kode Sumber</a>' +
+            '</div>' +
           '</div>' +
         '</div>'
       );
@@ -140,9 +153,24 @@
     return (
       '<section class="section" id="proyek"><div class="wrap">' +
         '<div class="section-head"><span class="badge">Proyek</span><h2>Proyek</h2></div>' +
-        '<div class="section-grid">' + cards + '</div>' +
+        '<div class="projects-filter">' +
+          '<label>Cari proyek berdasarkan tanggal: <input type="date" id="projectDateFilter" style="margin-left:8px;"></label>' +
+        '</div>' +
+        '<div class="section-grid" id="projectList">' + cards + '</div>' +
       '</div></section>'
     );
+  }
+
+  function techTags(p) {
+    var t = p.tech || [];
+    return t.map(function (x) { return '<span>' + escapeHtml(x) + '</span>'; }).join("");
+  }
+
+  function safeUrl(u) {
+    if (!u) return "#";
+    u = String(u).trim();
+    if (!u.startsWith("http://") && !u.startsWith("https://")) u = "https://" + u;
+    return u;
   }
 
   function techTags(p) {
@@ -230,6 +258,15 @@
         a.classList.add("active");
       });
     });
+
+    // ---- date filter on projects ----
+    var dateFilter = $("#projectDateFilter");
+    if (dateFilter) {
+      dateFilter.addEventListener("change", function () {
+        var val = dateFilter.value;
+        window.location.search = val ? "?date=" + val : "";
+      });
+    }
   }
 
   // render saat siap
