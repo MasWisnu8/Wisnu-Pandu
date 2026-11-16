@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Wisnu Pandu Hidayat</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ---- ADMIN LAYOUT ---- */
+    body.admin-page {
+      background: var(--bg);
+      display: flex; flex-direction: column; height: 100vh; overflow: hidden;
+    }
+    .admin-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 20px; background: var(--bg-panel); border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .admin-header h1 { font-size: 1.15rem; font-weight: 800; color: var(--dark); margin: 0; }
+    .admin-header .right { display: flex; gap: 10px; align-items: center; }
+    .admin-header .right .badge {
+      background: var(--primary); color: #fff; padding: 6px 14px; border-radius: var(--radius-sm);
+      font-size: 0.78rem; font-weight: 700; letter-spacing: 0.5px;
+    }
+    .admin-layout {
+      display: grid; grid-template-columns: 230px 1fr; height: calc(100vh - 70px); overflow: hidden;
+    }
+    .sidebar {
+      background: var(--bg-panel); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; overflow-y: auto;
+    }
+    .sidebar h2 {
+      font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-light);
+      padding: 14px 16px 8px; font-weight: 800;
+    }
+    .sidebar .nav { list-style: none; padding: 0 8px; display: flex; flex-direction: column; gap: 2px; }
+    .sidebar .nav button {
+      width: 100%; text-align: left; padding: 10px 12px; border: none; border-radius: var(--radius-sm);
+      background: transparent; color: var(--text-mid); font-family: inherit; font-size: 0.88rem; cursor: pointer;
+      transition: all 0.15s;
+    }
+    .sidebar .nav button:hover { background: rgba(132,94,194,0.12); color: var(--dark); }
+    .sidebar .nav button.active { background: var(--primary); color: #fff; font-weight: 700; }
+    .sidebar .nav .sep { height: 1px; background: var(--border); margin: 6px 12px; }
+
+    .editor { display: flex; flex-direction: column; overflow: hidden; }
+    .editor-top {
+      display: flex; align-items: center; gap: 12px; padding: 12px 20px;
+      background: var(--bg-panel); border-bottom: 1px solid var(--border); flex-shrink: 0;
+    }
+    .editor-top .title { font-weight: 800; color: var(--dark); flex: 1; }
+    .editor-top .preview-toggle { display: flex; gap: 6px; }
+    .editor-top select { padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-panel); font-family: inherit; font-size: 0.85rem; }
+
+    .editor-body { display: grid; grid-template-columns: 1.1fr 1fr; overflow: hidden; }
+    @media (max-width: 960px) { .editor-body { grid-template-columns: 1fr; } }
+
+    .preview {
+      background: var(--bg-panel); overflow: auto; padding: 24px; border-right: 1px solid var(--border);
+      min-height: 0;
+    }
+    .preview iframe { width: 100%; height: 100%; border: none; display: block; }
+    .preview .note { color: var(--text-light); font-size: 0.8rem; text-align: center; padding: 60px 0; }
+
+    .formpanel { padding: 20px 24px; overflow-y: auto; background: var(--bg-panel); }
+    .formpanel h3 { font-size: 1.2rem; margin-bottom: 18px; color: var(--dark); }
+    .formpanel .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+    @media (max-width: 600px) { .formpanel .row { grid-template-columns: 1fr; } }
+    .formpanel label { display: block; font-size: 0.82rem; font-weight: 700; color: var(--text-mid); margin-bottom: 6px; }
+    .formpanel input, .formpanel textarea, .formpanel select {
+      width: 100%; padding: 10px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border);
+      background: #fff; color: var(--text); font-family: inherit; font-size: 0.9rem;
+    }
+    .formpanel input:focus, .formpanel textarea:focus, .formpanel select:focus { outline: 2px solid var(--primary); border-color: transparent; }
+    .formpanel .full { grid-column: 1 / -1; }
+    .formpanel .hint { font-size: 0.75rem; color: var(--text-light); margin-top: 4px; }
+
+    /* skill / project list rows */
+    .list-editor { display: grid; gap: 14px; }
+    .list-editor .item {
+      background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius-sm);
+      padding: 14px; display: grid; grid-template-columns: 1fr 120px 40px; gap: 10px; align-items: center;
+    }
+    .list-editor .item input { padding: 8px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); font-size: 0.88rem; }
+    .list-editor .item .pct { display: flex; gap: 8px; align-items: center; }
+    .list-editor .item .pct input { width: 70px; }
+    .list-editor .item .del {
+      border: none; background: #fee2e2; color: #b91c1c; font-size: 1.1rem; cursor: pointer;
+      border-radius: 50%; width: 32px; height: 32px; line-height: 1;
+    }
+    .list-editor .item .del:hover { background: #fecaca; }
+
+    .add-btn {
+      margin-top: 10px; padding: 10px; border: 2px dashed var(--border); border-radius: var(--radius-sm);
+      background: transparent; color: var(--primary); font-family: inherit; font-weight: 700; font-size: 0.88rem; cursor: pointer;
+    }
+    .add-btn:hover { background: rgba(132,94,194,0.08); border-color: var(--primary); }
+
+    .actions {
+      display: flex; gap: 12px; flex-wrap: wrap; margin: 18px 0 24px; align-items: center;
+    }
+    .actions .spacer { flex: 1; }
+
+    .toast-container { position: fixed; bottom: 24px; right: 24px; display: flex; flex-direction: column; gap: 8px; z-index: 300; }
+    .toast {
+      background: var(--dark); color: #fff; padding: 12px 18px; border-radius: var(--radius-sm);
+      font-size: 0.88rem; font-weight: 600; box-shadow: var(--shadow-lg); max-width: 340px;
+    }
+    .toast .sub { font-weight: 400; font-size: 0.78rem; color: #cbd5c1; margin-top: 2px; }
+
+    .theme-switcher { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-mid); }
+    .theme-switcher input { accent-color: var(--primary); }
+
+    .github-bar {
+      background: #0d1117; color: #c9d1d9; border-radius: var(--radius-sm); padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; font-size: 0.85rem;
+    }
+    .github-bar .field { display: flex; flex-direction: column; gap: 4px; }
+    .github-bar .field label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; color: #8b949e; }
+    .github-bar .field input { background: #161b22; color: #e6edf3; border: 1px solid #30363d; border-radius: var(--radius-sm); padding: 8px 10px; }
+    .github-bar .row2 { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .btn-primary, .btn-secondary, .btn-danger { padding: 10px 18px; border-radius: var(--radius-sm); font-weight: 700; font-size: 0.88rem; cursor: pointer; border: none; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-secondary { background: var(--bg-panel); color: var(--dark); border: 1px solid var(--border); }
+    .btn-danger { background: #b91c1c; color: #fff; }
+    .btn-danger:hover { background: #991b1b; }
+  </style>
+</head>
+<body class="admin-page">
+
+  <div class="admin-header">
+    <h1><span class="badge">Admin Panel</span> Wisnu Pandu</h1>
+    <div class="right">
+      <span class="badge" style="background:#2C3D2E;color:#fff;">Edit Hanya untuk Admin</span>
+      <label class="theme-switcher">
+        <input type="checkbox" id="themeToggle">
+        Tema gelap
+      </label>
+      <button class="btn-secondary" id="guestLink" title="Buka situs pengunjung">◉ Buka Guest</button>
+    </div>
+  </div>
+
+  <div class="admin-layout">
+    <aside class="sidebar">
+      <h2 id="sectionTitle">Profil & Umum</h2>
+      <ul class="nav">
+        <li><button data-section="profile" class="active">Profil & Umum</button></li>
+        <li><button data-section="about">Tentang</button></li>
+        <li><button data-section="skills">Keterampilan</button></li>
+        <li><button data-section="projects">Proyek</button></li>
+        <li><button data-section="experience">Pengalaman</button></li>
+        <li><button data-section="contact">Kontak</button></li>
+        <li><button data-section="settings">Pengaturan</button></li>
+        <li class="sep"></li>
+        <li><button id="btnSaveDraft">💾 Simpan Draft</button></li>
+        <li><button id="btnPublish">⬆ Upload ke Repo</button></li>
+      </ul>
+    </aside>
+
+    <div class="editor">
+      <div class="editor-top">
+        <span class="title" id="editorTitle">Profil & Umum</span>
+        <div class="preview-toggle">
+          <select id="previewMode">
+            <option value="iframe">Lihat iframe (live)</option>
+            <option value="full">Full preview</option>
+            <option value="none">Matikan</option>
+          </select>
+        </div>
+      </div>
+      <div class="editor-body">
+        <div class="preview" id="previewPane">
+          <iframe src="index.html" title="Preview guest" id="previewFrame"></iframe>
+        </div>
+        <div class="formpanel" id="formPanel"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="data.js"></script>
+  <script>
+  (function () {
+    "use strict";
+    var SITE = window.SITE;
+    if (!SITE || !SITE.site) { alert("Data belum siap. Muat ulang halaman."); return; }
+
+    var STATE = { section: "profile", draft: null };
+    var $ = function (id) { return document.getElementById(id); };
+    var formPanel = $("formPanel");
+    var editorTitle = $("editorTitle");
+    var sectionTitle = $("sectionTitle");
+    var previewFrame = $("previewFrame");
+    var previewMode = $("previewMode");
+    var themeToggle = $("themeToggle");
+    var toastContainer = $("toastContainer");
+
+    var PAGE_TITLE = "Wisnu Pandu Hidayat — Front-End Developer";
+
+    // ---------- SIMPLE TOAST ----------
+    function toast(msg, sub, type) {
+      var el = document.createElement("div");
+      el.className = "toast" + (type ? " " + type : "");
+      el.innerHTML = "<span>" + escapeHtml(msg) + "</span>" + (sub ? "<div class='sub'>" + escapeHtml(sub) + "</div>" : "");
+      toastContainer.appendChild(el);
+      setTimeout(function () {
+        el.style.opacity = "1"; el.style.transform = "translateX(0)";
+        setTimeout(function () { el.style.opacity = "0"; el.style.transform = "translateX(20px)"; }, 2600);
+        setTimeout(function () { el.remove(); }, 3200);
+      }, 50);
+    }
+    function escapeHtml(s) {
+      return String(s || "").replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; });
+    }
+
+    // ---------- KUNJUNGI (open guest) ----------
+    $("guestLink").addEventListener("click", function () {
+      window.open(location.origin + "/" + (location.pathname.split("/").pop() === "index.html" ? "" : ""), "_blank");
+    });
+
+    // ---------- NAVIGASI SESI ----------
+    var sections = {
+      profile:    { title: "Profil & Umum", icon: "👤" },
+      about:      { title: "Tentang", icon: "📝" },
+      skills:     { title: "Keterampilan", icon: "🛠" },
+      projects:   { title: "Proyek", icon: "📦" },
+      experience: { title: "Pengalaman", icon: "🕰" },
+      contact:    { title: "Kontak", icon: "✉" },
+      settings:   { title: "Pengaturan & Simpan", icon: "⚙" }
+    };
+
+    function showSection(key) {
+      STATE.section = key;
+      var p = sections[key];
+      editorTitle.textContent = (p ? p.icon + " " : "") + p.title;
+      sectionTitle.textContent = (p ? p.icon + " " : "") + p.title;
+      document.querySelectorAll(".sidebar .nav button").forEach(function (b) {
+        b.classList.toggle("active", b.dataset.section === key);
+      });
+      renderForm();
+
+      // preview
+      if (previewMode.value === "iframe") {
+        previewFrame.src = "index.html" + (key === "settings" ? "" : "");
+        showIframePreview();
+      } else if (previewMode.value === "full") {
+        renderPreviewFull();
+      } else {
+        previewFrame.src = "about:blank";
+      }
+    }
+
+    // ---------- RENDER FORM ----------
+    function renderForm() {
+      var key = STATE.section;
+      var html = "";
+      if (key === "profile") {
+        html = profileForm();
+      } else if (key === "about") {
+        html = aboutForm();
+      } else if (key === "skills") {
+        html = skillsForm();
+      } else if (key === "projects") {
+        html = projectsForm();
+      } else if (key === "experience") {
+        html = experienceForm();
+      } else if (key === "contact") {
+        html = contactForm();
+      } else if (key === "settings") {
+        html = settingsForm();
+      }
+      formPanel.innerHTML = html;
+      bindForms();
+      refreshIframePreview();
+    }
+
+    // ---------- PROFIL & UMUM ----------
+    function profileForm() {
+      var s = SITE.site;
+      return (
+        '<div class="row">' +
+          '<label>Judul Website</label><input id="f-site-title" value="' + escapeAttr(s.title) + '">' +
+          '<label>Subjudul</label><input id="f-site-subtitle" value="' + escapeAttr(s.subtitle) + '">' +
+        '</div>' +
+        '<div class="row">' +
+          '<label>Tagline</label><textarea id="f-site-tagline" rows="2">' + escapeAttr(s.tagline) + '</textarea>' +
+          '<label>Deskripsi singkat</label><textarea id="f-site-description" rows="2">' + escapeAttr(s.description) + '</textarea>' +
+        '</div>' +
+        '<div class="row">' +
+          '<label>Avatar (teks/default)</label><input id="f-site-avatar" value="' + escapeAttr(s.avatar) + '" placeholder="Contoh: WP">' +
+          '<label>Foto Profil (URL)</label><input id="f-site-photo" value="' + escapeAttr(s.photo) + '" placeholder="https://...">' +
+        '</div>' +
+        '<label class="full"><input type="checkbox" id="f-site-isDark"' + (s.isDark ? " checked" : "") + '> Aktifkan tema gelap (dark mode)</label>' +
+        '<p class="hint">Foto profil: biarkan kosong agar pakai huruf default.</p>'
+      );
+    }
+
+    function escapeAttr(s) { return escapeHtml(s).replace(/'/g, "&#39;"); }
+
+    // ---------- TENTANG ----------
+    function aboutForm() {
+      var a = SITE.about || {};
+      var stats = (a.stats || []).map(function (st, i) {
+        return '<div class="row"><label>Statistik ' + (i + 1) + '</label><div style="display:flex;gap:8px;flex-wrap:wrap;"><input style="flex:1;min-width:120px;" placeholder="Label" value="' + escapeAttr(st.label) + '"><input style="flex:1;min-width:120px;" placeholder="Nilai" value="' + escapeAttr(st.value) + '"></div></div>';
+      }).join("");
+      var focus = (a.focus || []).map(function (f, i) {
+        return '<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;"><input style="flex:1;" placeholder="Fokus ' + (i + 1) + '" value="' + escapeAttr(f) + '"></div>';
+      }).join("");
+      return (
+        '<div class="row">' +
+          '<label>Nama</label><input id="f-about-name" value="' + escapeAttr(a.name) + '">' +
+          '<label>Jabatan</label><input id="f-about-title" value="' + escapeAttr(a.title) + '">' +
+        '</div>' +
+        '<div class="full"><label>Bio</label><textarea id="f-about-bio" rows="4">' + escapeAttr(a.bio) + '</textarea></div>' +
+        '<div class="full"><p class="hint">Statistik (bisa dikosongkan):</p>' + stats + '</div>' +
+        '<div class="full"><p class="hint">Fokus / hal yang diprioritaskan:</p>' + focus + '</div>'
+      );
+    }
+
+    // ---------- KETERAMPILAN ----------
+    function skillsForm() {
+      var skills = SITE.skills || [];
+      var rows = skills.map(function (sk, i) {
+        return '<div class="item"><input value="' + escapeAttr(sk.name) + '" placeholder="Nama skill"><div class="pct"><label>%</label><input type="number" min="0" max="100" value="' + (sk.level || 0) + '"></div><button class="del" data-del="skill" data-idx="' + i + '">✕</button></div>';
+      }).join("");
+      return (
+        '<div class="list-editor" id="skillList">' + rows + '</div>' +
+        '<button class="add-btn" id="addSkill">+ Tambah keterampilan</button>'
+      );
+    }
+
+    // ---------- PROYEK ----------
+    function projectsForm() {
+      var projects = SITE.projects || [];
+      var rows = projects.map(function (p, i) {
+        return (
+          '<div class="item">' +
+            '<div><input value="' + escapeAttr(p.title) + '" placeholder="Judul proyek"></div>' +
+            '<div style="display:flex;gap:10px;align-items:center;flex:1;flex-wrap:wrap;">' +
+              '<input style="flex:1;min-width:140px;" placeholder="Tech (dipisah spasi)" value="' + escapeAttr((p.tech || []).join(" ")) + '">' +
+              '<input style="width:100%;" placeholder="Link situs (https://)" value="' + escapeAttr(p.link) + '">' +
+              '<input style="width:100%;" placeholder="Repo (https://)" value="' + escapeAttr(p.repo) + '">' +
+            '</div>' +
+            '<button class="del" data-del="project" data-idx="' + i + '">✕</button>' +
+          '</div>'
+        );
+      }).join("");
+      return (
+        '<div class="list-editor" id="projectList">' + rows + '</div>' +
+        '<button class="add-btn" id="addProject">+ Tambah proyek</button>'
+      );
+    }
+
+    // ---------- PENGALAMAN ----------
+    function experienceForm() {
+      var exps = SITE.experience || [];
+      var rows = exps.map(function (e, i) {
+        return (
+          '<div class="item">' +
+            '<div><input value="' + escapeAttr(e.role) + '" placeholder="Posisi"></div>' +
+            '<div style="display:flex;gap:10px;align-items:center;flex:1;flex-wrap:wrap;">' +
+              '<input style="flex:1;min-width:120px;" placeholder="Perusahaan" value="' + escapeAttr(e.company) + '">' +
+              '<input style="width:140px;" placeholder="Periode" value="' + escapeAttr(e.period) + '">' +
+            '</div>' +
+            '<button class="del" data-del="experience" data-idx="' + i + '">✕</button>' +
+          '</div>'
+        );
+      }).join("");
+      return (
+        '<div class="list-editor" id="expList">' + rows + '</div>' +
+        '<button class="add-btn" id="addExp">+ Tambah pengalaman</button>'
+      );
+    }
+
+    // ---------- KONTAK ----------
+    function contactForm() {
+      var c = SITE.contact || {};
+      return (
+        '<div class="row">' +
+          '<label>Email</label><input id="f-contact-email" type="email" value="' + escapeAttr(c.email) + '">' +
+          '<label>Telepon</label><input id="f-contact-phone" value="' + escapeAttr(c.phone) + '">' +
+        '</div>' +
+        '<div class="row">' +
+          '<label>GitHub</label><input id="f-contact-github" value="' + escapeAttr(c.github) + '" placeholder="https://github.com/...">' +
+          '<label>LinkedIn</label><input id="f-contact-linkedin" value="' + escapeAttr(c.linkedin) + '" placeholder="https://linkedin.com/in/...">' +
+        '</div>' +
+        '<div class="row">' +
+          '<label>Twitter / X</label><input id="f-contact-twitter" value="' + escapeAttr(c.twitter) + '" placeholder="https://twitter.com/...">' +
+        '</div>'
+      );
+    }
+
+    // ---------- PENGATURAN ----------
+    function settingsForm() {
+      var s = SITE.site;
+      return (
+        '<p class="hint">Siapkan token GitHub (Personal Access Token) untuk mengirim perubahan langsung ke repo:</p>' +
+        '<div class="github-bar">' +
+          '<div class="field"><label for="ghToken">GitHub Token (scope: repo / public_repo)</label><input id="ghToken" type="password" placeholder="ghp_..."></div>' +
+          '<div class="field"><label for="ghOwner">Username</label><input id="ghOwner" value="MasWisnu8"></div>' +
+          '<div class="field"><label for="ghRepo">Nama Repo</label><input id="ghRepo" value="Wisnu-Pandu"></div>' +
+          '<div class="field"><label for="ghBranch">Branch</label><input id="ghBranch" value="main"></div>' +
+          '<div class="row2"><button class="btn-primary" id="saveGHToken">Simpan token</button><button class="btn-secondary" id="clearGHToken">Hapus token</button></div>' +
+          '<div class="row2" style="margin-top:8px;"><button class="btn-primary" id="btnPushData">⬆ Upload data.js ke repo</button></div>' +
+        '</div>' +
+        '<p class="hint" style="margin-top:10px;">Token akan disimpan di browser Anda (localStorage). Hanya Anda yang bisa upload perubahan.</p>'
+      );
+    }
+
+    // ---------- BIND FORM ----------
+    function bindForms() {
+      // field yang satu nilai (profile/about/contact)
+      function onText(id, keyPath) {
+        var el = $(id);
+        if (!el) return;
+        el.addEventListener("input", function () {
+          setValue(keyPath, el.value);
+          refreshIframePreview();
+        });
+      }
+      onText("f-site-title", ["site", "title"]);
+      onText("f-site-subtitle", ["site", "subtitle"]);
+      onText("f-site-tagline", ["site", "tagline"]);
+      onText("f-site-description", ["site", "description"]);
+      onText("f-site-avatar", ["site", "avatar"]);
+      onText("f-site-photo", ["site", "photo"]);
+      var darkCheck = $( "f-site-isDark" );
+      if (darkCheck) darkCheck.addEventListener("change", function () {
+        setValue(["site", "isDark"], darkCheck.checked);
+        refreshIframePreview();
+      });
+      onText("f-about-name", ["about", "name"]);
+      onText("f-about-title", ["about", "title"]);
+      onText("f-about-bio", ["about", "bio"]);
+      onText("f-about-statLabel0", ["about", "stats", 0, "label"]);
+      onText("f-about-statValue0", ["about", "stats", 0, "value"]);
+      onText("f-about-statLabel1", ["about", "stats", 1, "label"]);
+      onText("f-about-statValue1", ["about", "stats", 1, "value"]);
+      onText("f-about-statLabel2", ["about", "stats", 2, "label"]);
+      onText("f-about-statValue2", ["about", "stats", 2, "value"]);
+      onText("f-about-statLabel3", ["about", "stats", 3, "label"]);
+      onText("f-about-statValue3", ["about", "stats", 3, "value"]);
+      onText("f-about-focus0", ["about", "focus", 0]);
+      onText("f-about-focus1", ["about", "focus", 1]);
+      onText("f-about-focus2", ["about", "focus", 2]);
+      onText("f-contact-email", ["contact", "email"]);
+      onText("f-contact-phone", ["contact", "phone"]);
+      onText("f-contact-github", ["contact", "github"]);
+      onText("f-contact-linkedin", ["contact", "linkedin"]);
+      onText("f-contact-twitter", ["contact", "twitter"]);
+
+      // skill % via data-idx
+      document.querySelectorAll("#skillList .item").forEach(function (item) {
+        var idx = parseInt(item.dataset.idx, 10);
+        var inp = item.querySelector("input[type=number]");
+        if (!inp) return;
+        inp.addEventListener("input", function () {
+          var list = getVal(["skills"]);
+          list[idx].level = parseInt(inp.value, 10) || 0;
+          persist();
+          refreshIframePreview();
+        });
+      });
+      document.querySelectorAll("#projectList .item").forEach(function (item) {
+        var idx = parseInt(item.dataset.idx, 10);
+        var inputs = item.querySelectorAll("input");
+        var titleIn = inputs[0];
+        var techIn = inputs[1];
+        var linkIn = inputs[2];
+        if (titleIn) titleIn.addEventListener("input", function () { getVal(["projects", idx]).title = titleIn.value; persist(); refreshIframePreview(); });
+        if (techIn) techIn.addEventListener("input", function () { getVal(["projects", idx, "tech"]).splice(0, getVal(["projects", idx, "tech"]).length, ...techIn.value.split(/\s+/).filter(Boolean).map(function (t) { return t.trim(); })); persist(); refreshIframePreview(); });
+        if (linkIn) linkIn.addEventListener("input", function () { getVal(["projects", idx, "link"]).splice(0, 1, linkIn.value); persist(); refreshIframePreview(); });
+      });
+      document.querySelectorAll("#expList .item").forEach(function (item) {
+        var idx = parseInt(item.dataset.idx, 10);
+        var inputs = item.querySelectorAll("input");
+        var roleIn = inputs[0];
+        var compIn = inputs[1];
+        var perIn = inputs[2];
+        if (roleIn) roleIn.addEventListener("input", function () { getVal(["experience", idx]).role = roleIn.value; persist(); refreshIframePreview(); });
+        if (compIn) compIn.addEventListener("input", function () { getVal(["experience", idx]).company = compIn.value; persist(); refreshIframePreview(); });
+        if (perIn) perIn.addEventListener("input", function () { getVal(["experience", idx]).period = perIn.value; persist(); refreshIframePreview(); });
+      });
+
+      // tombol hapus
+      document.querySelectorAll(".del").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var type = btn.dataset.del, idx = parseInt(btn.dataset.idx, 10);
+          if (type === "skill") { getVal(["skills"]).splice(idx, 1); }
+          else if (type === "project") { getVal(["projects"]).splice(idx, 1); }
+          else if (type === "experience") { getVal(["experience"]).splice(idx, 1); }
+          persist(); renderForm(); refreshIframePreview();
+        });
+      });
+
+      // tambah item
+      var addSkillBtn = $("#addSkill");
+      if (addSkillBtn) addSkillBtn.addEventListener("click", function () {
+        getVal(["skills"]).push({ name: "", level: 60 });
+        persist(); renderForm(); refreshIframePreview();
+      });
+      var addProjectBtn = $("#addProject");
+      if (addProjectBtn) addProjectBtn.addEventListener("click", function () {
+        getVal(["projects"]).push({ title: "", tech: [], link: "", repo: "", cover: "" });
+        persist(); renderForm(); refreshIframePreview();
+      });
+      var addExpBtn = $("#addExp");
+      if (addExpBtn) addExpBtn.addEventListener("click", function () {
+        getVal(["experience"]).push({ role: "", company: "", period: "", description: "" });
+        persist(); renderForm(); refreshIframePreview();
+      });
+
+      // binding for settings-section controls (appear only when settings is rendered)
+      if (STATE.section === "settings") {
+        var saveBtn = $("#saveGHToken");
+        if (saveBtn) saveBtn.addEventListener("click", saveGHToken);
+        var clearBtn = $("#clearGHToken");
+        if (clearBtn) clearBtn.addEventListener("click", function () {
+          try { localStorage.removeItem(GH_TOKEN_KEY); } catch (e) {}
+          toast("Token dihapus", "Perlu login lagi untuk upload.", "");
+          var g = $("#ghToken");
+          if (g) g.value = "";
+        });
+        var ghTokenEl = $("#ghToken");
+        if (ghTokenEl) ghTokenEl.value = loadGHToken();
+      }
+    }
+
+    // ---------- ACCESS & PERSIST ----------
+    function getVal(path) {
+      var cur = SITE;
+      for (var i = 0; i < path.length; i++) {
+        if (cur == null) return [];
+        cur = cur[path[i]];
+      }
+      return cur;
+    }
+    function setValue(path, val) {
+      var cur = SITE;
+      for (var i = 0; i < path.length - 1; i++) { cur = cur[path[i]]; }
+      cur[path[path.length - 1]] = val;
+      STATE.draft = null; // force re-read next time
+      persist();
+      refreshIframePreview();
+    }
+    function persist() {
+      try { localStorage.setItem("wisnu_admin_draft", JSON.stringify(SITE)); } catch (e) {}
+    }
+    function loadDraft() {
+      try {
+        var raw = localStorage.getItem("wisnu_admin_draft");
+        if (raw) {
+          var d = JSON.parse(raw);
+          for (var k in d) { if (d.hasOwnProperty(k) && SITE[k] !== undefined) SITE[k] = d[k]; }
+          STATE.draft = true;
+        }
+      } catch (e) {}
+    }
+    loadDraft();
+
+    // ---------- PREVIEW ----------
+    function showIframePreview() {
+      // set top nav agar index.html tetap punya section aktif
+      var top = window.parent;
+      if (previewMode.value === "iframe") {
+        previewFrame.src = "index.html";
+      }
+    }
+
+    // full preview: render guest HTML into preview pane (miror) — using the SAME engine
+    function renderPreviewFull() {
+      // rebuild a mini-site into #previewPane
+      var preview = $("previewPane");
+      preview.innerHTML = guestHTML();
+      // re-run the SAME rendering logic in the pane
+      var saved = window.SITE;
+      try {
+        var s = SITE.site;
+        var isDark = s.isDark !== false;
+        var doc = preview.ownerDocument;
+        doc.body.style.background = isDark ? "#161d1a" : "#f6f4f0";
+        // inject css
+        var style = doc.createElement("style");
+        style.textContent = document.querySelector("style").textContent;
+        doc.head.appendChild(style);
+        // render content (simplified holder)
+        preview.innerHTML = guestHTML();
+        // attach nav clicks
+        preview.querySelectorAll("nav a").forEach(function (a) {
+          a.addEventListener("click", function (e) { e.preventDefault(); });
+        });
+      } catch (e) { preview.innerHTML = "<p class='note'>Gagal me-render preview.</p>"; }
+    }
+
+    function guestHTML() {
+      var s = SITE.site, a = SITE.about || {}, sc = SITE.skills || [], pj = SITE.projects || [], exp = SITE.experience || [], c = SITE.contact || {};
+      function imgF() {
+        var ph = s.photo; if (ph) return ph;
+        return "data:image/svg+xml," + encodeURIComponent(
+          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="#845EC2" width="100" height="100" rx="50"/><text x="50" y="58" font-size="54" font-family="Segoe UI,sans-serif" font-weight="800" fill="#fff" text-anchor="middle">' + escapeHtml(s.avatar || "U") + "</text></svg>"
+        );
+      }
+      function esc(x) { return escapeHtml(x); }
+      var stats = (a.stats || []).map(function (st) {
+        return '<div class="stat"><div class="stat-number">' + esc(st.value) + '</div><div class="stat-label">' + esc(st.label) + '</div></div>';
+      }).join("");
+      var skills = sc.map(function (sk) {
+        return '<div class="skill"><div class="name">' + esc(sk.name) + '</div><div class="level">' + (sk.level || 0) + '%' + bar(sk.level) + '</div></div>';
+      }).join("");
+      var projects = pj.map(function (p, i) {
+        return '<div class="project-card"><div class="title">' + esc(p.title) + '</div><div class="tech">' + (p.tech || []).map(function (t) { return '<span>' + esc(t) + '</span>'; }).join("") + '</div><p>' + esc(p.description) + '</p><div class="hero-actions" style="margin-top:14px;"><a class="btn btn-outline" href="' + safe(u(p.link)) + '">Lihat</a><a class="btn btn-outline" href="' + safe(u(p.repo)) + '">Kode</a></div></div>';
+      }).join("");
+      var experiences = exp.map(function (e) {
+        return '<div class="exp-card"><div class="role">' + esc(e.role) + '</div><div class="company">' + esc(e.company) + '</div><div class="period">' + esc(e.period) + '</div><p>' + esc(e.description) + '</p></div>';
+      }).join("");
+      return (
+        '<header style="position:sticky;top:0;background:#fff;border-bottom:1px solid #e3e0da;"><div style="max-width:1100px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;"><a style="display:flex;align-items:center;gap:10px;font-size:1.3rem;font-weight:800;color:#2C3D2E;"><span style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#845EC2,#0081CF);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.05rem;">WP</span>Wisnu Pandu</a><nav><ul style="list-style:none;display:flex;gap:6px;">' +
+        '<li><a style="padding:8px 14px;border-radius:8px;text-decoration:none;color:#5c5c5c;font-weight:600;" href="#tentang">Tentang</a></li>' +
+        '<li><a style="padding:8px 14px;border-radius:8px;text-decoration:none;color:#5c5c5c;font-weight:600;" href="#keterampilan">Keterampilan</a></li>' +
+        '<li><a style="padding:8px 14px;border-radius:8px;text-decoration:none;color:#5c5c5c;font-weight:600;" href="#proyek">Proyek</a></li>' +
+        '<li><a style="padding:8px 14px;border-radius:8px;text-decoration:none;color:#5c5c5c;font-weight:600;" href="#pengalaman">Pengalaman</a></li>' +
+        '<li><a style="padding:8px 14px;border-radius:8px;text-decoration:none;color:#5c5c5c;font-weight:600;" href="#kontak">Kontak</a></li>' +
+        '</ul></nav></div></header>' +
+        '<section class="hero" style="padding:64px 24px 56px;text-align:center;background:linear-gradient(160deg,#2C3D2E 0%,#1F2E24 55%,#243028 100%);color:#fff;"><div style="max-width:1100px;margin:0 auto;padding:0 24px;">' +
+        '<span class="hero-badge" style="display:inline-block;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.22);padding:6px 16px;border-radius:999px;font-size:0.8rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">Halo, Saya</span>' +
+        '<div class="hero-avatar" style="width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,0.14);border:4px solid rgba(255,255,255,0.28);margin:0 auto 22px;display:flex;align-items:center;justify-content:center;font-size:2.6rem;font-weight:800;overflow:hidden;"><img src="' + imgF() + '" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>' +
+        '<h1 style="color:#fff;font-size:2.4rem;font-weight:800;letter-spacing:-1px;">' + esc(s.title) + '</h1>' +
+        '<p class="subtitle" style="font-size:1.15rem;opacity:0.85;margin-bottom:14px;">' + esc(s.subtitle) + '</p>' +
+        '<p class="tagline" style="font-size:1rem;opacity:0.75;max-width:620px;margin:0 auto 26px;">' + esc(s.tagline) + '</p>' +
+        '<div class="hero-actions" style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;"><a class="btn btn-primary" style="background:#fff;color:#2C3D2E;">Pelajari</a><a class="btn btn-outline" style="background:transparent;color:#fff;border:2px solid rgba(255,255,255,0.35);">Proyek</a></div>' +
+        '</div></section>' +
+        '<section class="section" id="tentang" style="padding:56px 24px;"><div style="max-width:1100px;margin:0 auto;padding:0 24px;"><div class="section-head" style="display:flex;align-items:center;gap:12px;margin-bottom:28px;"><span class="badge" style="background:#845EC2;color:#fff;padding:5px 14px;border-radius:999px;font-size:0.75rem;font-weight:700;">Tentang</span><h2>Tentang Saya</h2></div><div class="section-grid" style="display:grid;gap:24px;"><div class="about-card" style="background:#fff;border-radius:16px;padding:28px;box-shadow:0 1px 3px rgba(44,61,46,0.08);border-left:5px solid #845EC2;"><h3>' + esc(a.name) + '</h3><p>' + esc(a.bio) + '</p></div><div class="stats-row" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:22px 0;">' + stats + '</div></div></div></section>' +
+        '<section class="section" id="keterampilan" style="padding:56px 24px;"><div style="max-width:1100px;margin:0 auto;padding:0 24px;"><div class="section-head" style="display:flex;align-items:center;gap:12px;margin-bottom:28px;"><span class="badge" style="background:#845EC2;color:#fff;padding:5px 14px;border-radius:999px;font-size:0.75rem;font-weight:700;">Keterampilan</span><h2>Keterampilan</h2></div><div class="skills-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;">' + skills + '</div></div></section>' +
+        '<section class="section" id="proyek" style="padding:56px 24px;"><div style="max-width:1100px;margin:0 auto;padding:0 24px;"><div class="section-head" style="display:flex;align-items:center;gap:12px;margin-bottom:28px;"><span class="badge" style="background:#845EC2;color:#fff;padding:5px 14px;border-radius:999px;font-size:0.75rem;font-weight:700;">Proyek</span><h2>Proyek</h2></div><div class="section-grid" style="display:grid;gap:24px;">' + projects + '</div></div></section>' +
+        '<section class="section" id="pengalaman" style="padding:56px 24px;"><div style="max-width:1100px;margin:0 auto;padding:0 24px;"><div class="section-head" style="display:flex;align-items:center;gap:12px;margin-bottom:28px;"><span class="badge" style="background:#845EC2;color:#fff;padding:5px 14px;border-radius:999px;font-size:0.75rem;font-weight:700;">Pengalaman</span><h2>Pengalaman</h2></div><div class="section-grid" style="display:grid;gap:24px;">' + experiences + '</div></div></section>' +
+        '<section class="section section-alt" id="kontak" style="padding:56px 24px;"><div style="max-width:1100px;margin:0 auto;padding:0 24px;"><div class="section-head" style="display:flex;align-items:center;gap:12px;margin-bottom:28px;"><span class="badge" style="background:#845EC2;color:#fff;padding:5px 14px;border-radius:999px;font-size:0.75rem;font-weight:700;">Kontak</span><h2>Kontak</h2></div><div class="section-grid" style="display:grid;gap:24px;"><div class="section-grid" style="grid-template-columns:1fr 1fr;"><div class="contact-item" style="background:#fff;border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(44,61,46,0.08);text-align:center;"><div class="ic" style="font-size:1.6rem;">✉</div><div class="label" style="font-size:0.78rem;color:#8a8a8a;">Email</div><div class="val" style="font-size:0.95rem;font-weight:700;color:#2C3D2E;"><a href="mailto:' + esc(c.email) + '">' + esc(c.email) + '</a></div></div><div class="contact-item" style="background:#fff;border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(44,61,46,0.08);text-align:center;"><div class="ic" style="font-size:1.6rem;">📱</div><div class="label" style="font-size:0.78rem;color:#8a8a8a;">Telepon</div><div class="val" style="font-size:0.95rem;font-weight:700;color:#2C3D2E;">' + (c.phone ? esc(c.phone) : '<span style="color:#8a8a8a;">Belum diatur</span>') + '</div></div></div><div class="contact-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;"><a class="contact-item" href="' + safe(u(c.github)) + '" style="text-decoration:none;"><div class="ic" style="font-size:1.6rem;">🐙</div><div class="label" style="font-size:0.78rem;color:#8a8a8a;">GitHub</div><div class="val" style="font-size:0.95rem;font-weight:700;color:#2C3D2E;">github.com</div></a><a class="contact-item" href="' + safe(u(c.linkedin)) + '" style="text-decoration:none;"><div class="ic" style="font-size:1.6rem;">💼</div><div class="label" style="font-size:0.78rem;color:#8a8a8a;">LinkedIn</div><div class="val" style="font-size:0.95rem;font-weight:700;color:#2C3D2E;">linkedin.com</div></a></div></div></section>' +
+        '<footer><div class="footer-inner" style="background:#2C3D2E;color:#fff;padding:32px 24px;border-top:4px solid #845EC2;"><span class="copyright" style="font-size:0.82rem;opacity:0.75;">© 2026 ' + esc(s.title) + '. All rights reserved.</span><span class="admin-link" style="font-size:0.82rem;color:#fff;opacity:0.7;">Admin: admin.html</span></div></footer>'
+      );
+    }
+
+    function bar(p) {
+      var pct = Math.max(0, Math.min(100, Number(p) || 0));
+      return '<div class="bar"><i style="width:' + pct + '%;"></i></div>';
+    }
+    function safe(u) { if (!u) return "#"; u = String(u).trim(); if (!u.startsWith("http://") && !u.startsWith("https://")) u = "https://" + u; return u; }
+
+    // ---------- SIMPAN DRAFT ----------
+    $("btnSaveDraft").addEventListener("click", function () {
+      persist();
+      toast("Draft disimpan", "Data tersimpan di browser (localStorage). Gunakan 'Upload ke Repo' untuk publikasi.", "");
+    });
+
+    // ---------- UPLOAD KE REPO (GitHub API) ----------
+    $("btnPublish").addEventListener("click", function () {
+      var token = $("ghToken").value.trim();
+      if (!token) { toast("Token GitHub belum diisi", "Isi token di bagian Pengaturan dulu.", "admin"); return; }
+      pushToGitHub(token, function (ok, msg) {
+        if (ok) toast("Upload berhasil!", msg, "admin");
+        else toast("Gagal", msg, "admin");
+      });
+    });
+
+    var GH_TOKEN_KEY = "wisnu_gh_token";
+    function saveGHToken() {
+      var t = $("ghToken").value.trim();
+      if (!t) { toast("Token kosong", "Masukkan token GitHub.", "admin"); return; }
+      try { localStorage.setItem(GH_TOKEN_KEY, t); } catch (e) {}
+      toast("Token disimpan", "Bisa dipakai untuk upload langsung ke repo.", "admin");
+    }
+    function loadGHToken() {
+      try { return localStorage.getItem(GH_TOKEN_KEY); } catch (e) { return ""; }
+    }
+
+
+
+    function pushToGitHub(token, cb) {
+      var owner = $("ghOwner").value.trim() || "MasWisnu8";
+      var repo = $("ghRepo").value.trim() || "Wisnu-Pandu";
+      var branch = $("ghBranch").value.trim() || "main";
+      var url = "https://api.github.com/repos/" + encodeURIComponent(owner) + "/" + encodeURIComponent(repo) + "/contents/data.js?ref=" + encodeURIComponent(branch);
+      var data = {
+        message: "Update data dari admin panel",
+        content: btoa(unescape(encodeURIComponent(JSON.stringify(SITE, null, 2)))),
+        branch: branch
+      };
+      fetch(url, {
+        method: "PUT",
+        headers: {
+          "Authorization": "token " + token,
+          "User-Agent": "wisnu-admin-panel",
+          "Accept": "application/vnd.github+json"
+        },
+        body: JSON.stringify(data)
+      }).then(function (r) {
+        if (r.ok) return r.json().then(function (j) { return { ok: true, msg: "Commit dibuat: " + j.commit.url }; });
+        if (r.status === 404) return Promise.reject("Repo tidak ditemukan. Cek owner/repo atau private repo.");
+        if (r.status === 401 || r.status === 403) return Promise.reject("Token tidak sah / dibatasi. Cek token.");
+        return Promise.reject("GitHub menolak (HTTP " + r.status + ").");
+      }).then(function (res) { cb(true, res.msg); }).catch(function (err) { cb(false, String(err)); });
+    }
+
+    // ---------- AKSI KLIK KASAR DI SIDEBAR (is already bound inside showSection) ----------
+    document.querySelectorAll(".sidebar .nav button").forEach(function (b) {
+      b.addEventListener("click", function () { showSection(b.dataset.section); });
+    });
+
+    // preview mode
+    previewMode.addEventListener("change", function () {
+      if (previewMode.value === "iframe") {
+        previewFrame.src = "index.html";
+      } else {
+        showSection(STATE.section);
+      }
+    });
+
+    // init first section
+    showSection("profile");
+
+    // live preview when user types in form
+    function refreshIframePreview() {
+      if (previewMode.value === "iframe") {
+        previewFrame.src = "index.html";
+      } else {
+        renderPreviewFull();
+      }
+    }
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+# local test artifacts
+node_modules/
+test_render.js
+*.log
