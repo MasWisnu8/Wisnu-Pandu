@@ -1,229 +1,4 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin — Wisnu Pandu Hidayat</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    /* ---- ADMIN LAYOUT ---- */
-    body.admin-page {
-      background: var(--bg);
-      display: flex; flex-direction: column; height: 100vh; overflow: hidden;
-    }
-    .admin-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 12px 20px; background: var(--bg-panel); border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
-    }
-    .admin-header h1 { font-size: 1.15rem; font-weight: 800; color: var(--dark); margin: 0; }
-    .admin-header .right { display: flex; gap: 10px; align-items: center; }
-    .admin-header .right .badge {
-      background: var(--primary); color: #fff; padding: 6px 14px; border-radius: var(--radius-sm);
-      font-size: 0.78rem; font-weight: 700; letter-spacing: 0.5px;
-    }
-    .admin-layout {
-      display: grid; grid-template-columns: 230px 1fr; height: calc(100vh - 70px); overflow: hidden;
-    }
-    .sidebar {
-      background: var(--bg-panel); border-right: 1px solid var(--border);
-      display: flex; flex-direction: column; overflow-y: auto;
-    }
-    .sidebar h2 {
-      font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-light);
-      padding: 14px 16px 8px; font-weight: 800;
-    }
-    .sidebar .nav { list-style: none; padding: 0 8px; display: flex; flex-direction: column; gap: 2px; }
-    .sidebar .nav button {
-      width: 100%; text-align: left; padding: 10px 12px; border: none; border-radius: var(--radius-sm);
-      background: transparent; color: var(--text-mid); font-family: inherit; font-size: 0.88rem; cursor: pointer;
-      transition: all 0.15s;
-    }
-    .sidebar .nav button:hover { background: rgba(132,94,194,0.12); color: var(--dark); }
-    .sidebar .nav button.active { background: var(--primary); color: #fff; font-weight: 700; }
-    .sidebar .nav .sep { height: 1px; background: var(--border); margin: 6px 12px; }
 
-    .editor { display: flex; flex-direction: column; overflow: hidden; }
-    .editor-top {
-      display: flex; align-items: center; gap: 12px; padding: 12px 20px;
-      background: var(--bg-panel); border-bottom: 1px solid var(--border); flex-shrink: 0;
-    }
-    .editor-top .title { font-weight: 800; color: var(--dark); flex: 1; }
-    .editor-top .preview-toggle { display: flex; gap: 6px; }
-    .editor-top select { padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-panel); font-family: inherit; font-size: 0.85rem; }
-
-    .editor-body { display: grid; grid-template-columns: 1.1fr 1fr; overflow: hidden; }
-    @media (max-width: 960px) { .editor-body { grid-template-columns: 1fr; } }
-
-    .preview {
-      background: var(--bg-panel); overflow: auto; padding: 24px; border-right: 1px solid var(--border);
-      min-height: 0;
-    }
-    .preview iframe { width: 100%; height: 100%; border: none; display: block; }
-    .preview .note { color: var(--text-light); font-size: 0.8rem; text-align: center; padding: 60px 0; }
-
-    .formpanel { padding: 20px 24px; overflow-y: auto; background: var(--bg-panel); }
-    .formpanel h3 { font-size: 1.2rem; margin-bottom: 18px; color: var(--dark); }
-    .formpanel .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
-    @media (max-width: 600px) { .formpanel .row { grid-template-columns: 1fr; } }
-    .formpanel label { display: block; font-size: 0.82rem; font-weight: 700; color: var(--text-mid); margin-bottom: 6px; }
-    .formpanel input, .formpanel textarea, .formpanel select {
-      width: 100%; padding: 10px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border);
-      background: #fff; color: var(--text); font-family: inherit; font-size: 0.9rem;
-    }
-    .formpanel input:focus, .formpanel textarea:focus, .formpanel select:focus { outline: 2px solid var(--primary); border-color: transparent; }
-    .formpanel .full { grid-column: 1 / -1; }
-    .formpanel .hint { font-size: 0.75rem; color: var(--text-light); margin-top: 4px; }
-
-    /* skill / project list rows */
-    .list-editor { display: grid; gap: 14px; }
-    .list-editor .item {
-      background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius-sm);
-      padding: 14px; display: grid; grid-template-columns: 1fr 120px 40px; gap: 10px; align-items: center;
-    }
-    .list-editor .item input { padding: 8px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); font-size: 0.88rem; }
-    .list-editor .item .pct { display: flex; gap: 8px; align-items: center; }
-    .list-editor .item .pct input { width: 70px; }
-    .list-editor .item .del {
-      border: none; background: #fee2e2; color: #b91c1c; font-size: 1.1rem; cursor: pointer;
-      border-radius: 50%; width: 32px; height: 32px; line-height: 1;
-    }
-    .list-editor .item .del:hover { background: #fecaca; }
-
-    .add-btn {
-      margin-top: 10px; padding: 10px; border: 2px dashed var(--border); border-radius: var(--radius-sm);
-      background: transparent; color: var(--primary); font-family: inherit; font-weight: 700; font-size: 0.88rem; cursor: pointer;
-    }
-    .add-btn:hover { background: rgba(132,94,194,0.08); border-color: var(--primary); }
-
-    .actions {
-      display: flex; gap: 12px; flex-wrap: wrap; margin: 18px 0 24px; align-items: center;
-    }
-    .actions .spacer { flex: 1; }
-
-    .toast-container { position: fixed; bottom: 24px; right: 24px; display: flex; flex-direction: column; gap: 8px; z-index: 300; }
-    .toast {
-      background: var(--dark); color: #fff; padding: 12px 18px; border-radius: var(--radius-sm);
-      font-size: 0.88rem; font-weight: 600; box-shadow: var(--shadow-lg); max-width: 340px;
-    }
-    .toast .sub { font-weight: 400; font-size: 0.78rem; color: #cbd5c1; margin-top: 2px; }
-
-    .theme-switcher { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-mid); }
-    .theme-switcher input { accent-color: var(--primary); }
-
-    .login-overlay {
-      position: fixed; inset: 0;
-      background: rgba(44,61,46,0.65); backdrop-filter: blur(6px);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 400; padding: 20px;
-    }
-    .login-modal {
-      background: var(--bg-panel); border-radius: var(--radius); box-shadow: var(--shadow-lg);
-      padding: 34px 28px; max-width: 400px; width: 100%; text-align: center; color: var(--dark);
-    }
-    .login-modal h2 { margin: 0 0 6px; font-size: 1.4rem; }
-    .login-modal .sub { color: var(--text-light); font-size: 0.88rem; margin-bottom: 18px; }
-    .login-modal .form-group { text-align: left; }
-    .login-modal label { font-size: 0.82rem; font-weight: 700; color: var(--text-mid); margin-bottom: 6px; display: block; }
-    .login-modal input {
-      width: 100%; padding: 12px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border);
-      background: #fff; color: var(--text); font-size: 0.92rem; font-family: inherit;
-    }
-    .login-modal input:focus { outline: 2px solid var(--primary); border-color: transparent; }
-    .login-modal .btn {
-      margin-top: 12px; padding: 12px 22px; background: var(--primary); color: #fff; border: none;
-      border-radius: var(--radius-sm); font-weight: 700; font-size: 0.92rem; cursor: pointer;
-    }
-    .login-modal .btn:hover { background: var(--primary-dark); }
-    .login-hint { font-size: 0.75rem; color: var(--text-light); margin-top: 14px; text-align: left; line-height: 1.5; }
-    .login-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
-    .login-actions .btn { padding: 8px 16px; font-size: 0.8rem; }
-
-    .github-bar {
-      background: #0d1117; color: #c9d1d9; border-radius: var(--radius-sm); padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; font-size: 0.85rem;
-    }
-    .github-bar .field { display: flex; flex-direction: column; gap: 4px; }
-    .github-bar .field label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; color: #8b949e; }
-    .github-bar .field input { background: #161b22; color: #e6edf3; border: 1px solid #30363d; border-radius: var(--radius-sm); padding: 8px 10px; }
-    .github-bar .row2 { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-    .btn-primary, .btn-secondary, .btn-danger { padding: 10px 18px; border-radius: var(--radius-sm); font-weight: 700; font-size: 0.88rem; cursor: pointer; border: none; }
-    .btn-primary { background: var(--primary); color: #fff; }
-    .btn-primary:hover { background: var(--primary-dark); }
-    .btn-secondary { background: var(--bg-panel); color: var(--dark); border: 1px solid var(--border); }
-    .btn-danger { background: #b91c1c; color: #fff; }
-    .btn-danger:hover { background: #991b1b; }
-  </style>
-</head>
-<body class="admin-page">
-
-  <div class="admin-header">
-    <h1><span class="badge">Admin Panel</span> Wisnu Pandu</h1>
-    <div class="right">
-      <span class="badge" style="background:#2C3D2E;color:#fff;">Edit Hanya untuk Admin</span>
-      <label class="theme-switcher">
-        <input type="checkbox" id="themeToggle">
-        Tema gelap
-      </label>
-      <button class="btn-secondary" id="guestLink" title="Buka situs pengunjung">◉ Buka Guest</button>
-    </div>
-  </div>
-
-  <div class="admin-layout">
-    <div class="login-overlay" id="loginOverlay">
-      <div class="login-modal">
-        <h2>🔒 Admin Login</h2>
-        <p class="sub">Silakan masukkan password untuk masuk ke menu admin.</p>
-        <div class="login-modal form-group">
-          <label for="loginPassword">Password</label>
-          <input type="password" id="loginPassword" placeholder="Password" autocomplete="off">
-        </div>
-        <div class="login-actions">
-          <button class="btn" id="loginBtn">Masuk</button>
-        </div>
-        <p class="login-hint"><small>Password default: <strong>admin123</strong></small></p>
-      </div>
-    </div>
-  </div>
-    <aside class="sidebar">
-      <h2 id="sectionTitle">Profil & Umum</h2>
-      <ul class="nav">
-        <li><button data-section="profile" class="active">Profil & Umum</button></li>
-        <li><button data-section="about">Tentang</button></li>
-        <li><button data-section="skills">Keterampilan</button></li>
-        <li><button data-section="projects">Proyek</button></li>
-        <li><button data-section="experience">Pengalaman</button></li>
-        <li><button data-section="contact">Kontak</button></li>
-        <li><button data-section="settings">Pengaturan</button></li>
-        <li class="sep"></li>
-        <li><button id="btnSaveDraft">💾 Simpan Draft</button></li>
-        <li><button id="btnPublish">⬆ Upload ke Repo</button></li>
-      </ul>
-    </aside>
-
-    <div class="editor">
-      <div class="editor-top">
-        <span class="title" id="editorTitle">Profil & Umum</span>
-        <div class="preview-toggle">
-          <select id="previewMode">
-            <option value="iframe">Lihat iframe (live)</option>
-            <option value="full">Full preview</option>
-            <option value="none">Matikan</option>
-          </select>
-        </div>
-      </div>
-      <div class="editor-body">
-        <div class="preview" id="previewPane">
-          <iframe src="index.html" title="Preview guest" id="previewFrame"></iframe>
-        </div>
-        <div class="formpanel" id="formPanel"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="toast-container" id="toastContainer"></div>
-
-  <script src="data.js"></script>
-  <script>
   (function () {
     "use strict";
     var SITE = window.SITE;
@@ -290,7 +65,7 @@
       }, 50);
     }
     function escapeHtml(s) {
-      return String(s || "").replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; });
+      return String(s || "").replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "&lt;": "&lt;", "&gt;": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; });
     }
 
     // ---------- KUNJUNGI (open guest) ----------
@@ -358,35 +133,35 @@
     function profileForm() {
       var s = SITE.site;
       return (
-        '<div class="row">' +
-          '<label>Judul Website</label><input id="f-site-title" value="' + escapeAttr(s.title) + '">' +
-          '<label>Subjudul</label><input id="f-site-subtitle" value="' + escapeAttr(s.subtitle) + '">' +
-        '</div>' +
-        '<div class="row">' +
-          '<label>Tagline</label><textarea id="f-site-tagline" rows="2">' + escapeAttr(s.tagline) + '</textarea>' +
-          '<label>Deskripsi singkat</label><textarea id="f-site-description" rows="2">' + escapeAttr(s.description) + '</textarea>' +
-        '</div>' +
-        '<div class="row">' +
-          '<label>Avatar (teks/default)</label><input id="f-site-avatar" value="' + escapeAttr(s.avatar) + '" placeholder="Contoh: WP">' +
-          '<label>Foto Profil (URL)</label><input id="f-site-photo" value="' + escapeAttr(s.photo) + '" placeholder="https://...">' +
-        '</div>' +
-        '<div class="row">' +
-          '<label>Foto Profil (Upload)</label>' +
-          '<div style="position:relative;display:inline-flex;max-width:420px;">' +
-            '<input type="file" id="f-site-photo-file" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer;border:none;background:transparent;">' +
-            '<div id="photoPreview" style="display:flex;align-items:center;gap:12px;min-height:44px;padding:8px;background:#fff;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.08);border:1px solid var(--border);cursor:pointer;">' +
-              '<span class="photo-placeholder" id="photoPlaceholder" style="font-size:1.4rem;">📷</span>' +
-              '<div style="display:flex;flex-direction:column;gap:4px;min-width:0;">' +
-                '<span style="font-size:0.78rem;color:#8a8a8a;">Klik untuk pilih gambar (Drive / local)</span>' +
-                '<span id="photoLabel" style="font-size:0.82rem;font-weight:600;color:var(--dark);">Belum ada foto</span>' +
-              '</div>' +
-            '</div>' +
-          '</div>' +
-          '<input type="hidden" id="f-site-photo" value="' + escapeAttr(s.photo) + '">' +
-        '</div>' +
-        '<div class="full"><input type="checkbox" id="f-site-isDark"' + (s.isDark ? " checked" : "") + '> Aktifkan tema gelap (dark mode)</label>' +
-        '<p class="hint">Foto profil: biarkan kosong agar pakai huruf default.</p>' +
-        '<p class="hint">Upload: klik gambar untuk pilih file (Drive / local), pastikan ukuran file < 1MB.</p>' +
+        '&lt;div class="row"&gt;' +
+          '&lt;label&gt;Judul Website&lt;/label&gt;&lt;input id="f-site-title" value="' + escapeAttr(s.title) + '&quot;&gt;' +
+          '&lt;label&gt;Subjudul&lt;/label&gt;&lt;input id="f-site-subtitle" value="' + escapeAttr(s.subtitle) + '&quot;&gt;' +
+        '&lt;/div&gt;' +
+        '&lt;div class="row"&gt;' +
+          '&lt;label&gt;Tagline&lt;/label&gt;&lt;textarea id="f-site-tagline" rows="2"&gt;' + escapeAttr(s.tagline) + '&lt;/textarea&gt;' +
+          '&lt;label&gt;Deskripsi singkat&lt;/label&gt;&lt;textarea id="f-site-description" rows="2"&gt;' + escapeAttr(s.description) + '&lt;/textarea&gt;' +
+        '&lt;/div&gt;' +
+        '&lt;div class="row"&gt;' +
+          '&lt;label&gt;Avatar (teks/default)&lt;/label&gt;&lt;input id="f-site-avatar" value="' + escapeAttr(s.avatar) + '" placeholder="Contoh: WP"&gt;' +
+          '&lt;label&gt;Foto Profil (URL)&lt;/label&gt;&lt;input id="f-site-photo" value="' + escapeAttr(s.photo) + '" placeholder="https://..."&gt;' +
+        '&lt;/div&gt;' +
+        '&lt;div class="row"&gt;' +
+          '&lt;label&gt;Foto Profil (Upload)&lt;/label&gt;' +
+          '&lt;div style="position:relative;display:inline-flex;max-width:420px;"&gt;' +
+            '&lt;input type="file" id="f-site-photo-file" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer;border:none;background:transparent;"&gt;' +
+            '&lt;div id="photoPreview" style="display:flex;align-items:center;gap:12px;min-height:44px;padding:8px;background:#fff;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.08);border:1px solid var(--border);cursor:pointer;"&gt;' +
+              '&lt;span class="photo-placeholder" id="photoPlaceholder" style="font-size:1.4rem;"&gt;📷&lt;/span&gt;' +
+              '&lt;div style="display:flex;flex-direction:column;gap:4px;min-width:0;"&gt;' +
+                '&lt;span style="font-size:0.78rem;color:#8a8a8a;"&gt;Klik untuk pilih gambar (Drive / local)&lt;/span&gt;' +
+                '&lt;span id="photoLabel" style="font-size:0.82rem;font-weight:600;color:var(--dark);"&gt;Belum ada foto&lt;/span&gt;' +
+              '&lt;/div&gt;' +
+            '&lt;/div&gt;' +
+          '&lt;/div&gt;' +
+          '&lt;input type="hidden" id="f-site-photo" value="' + escapeAttr(s.photo) + '"&gt;' +
+        '&lt;/div&gt;' +
+        '&lt;div class="full"&gt;&lt;input type="checkbox" id="f-site-isDark"&gt;' + (s.isDark ? " checked" : "") + '&gt; Aktifkan tema gelap (dark mode) &lt;/label&gt;' +
+        '&lt;p class="hint"&gt;Foto profil: biarkan kosong agar pakai huruf default.&lt;/p&gt;' +
+        '&lt;p class="hint"&gt;Upload: klik gambar untuk pilih file (Drive / local), pastikan ukuran file &lt; 1MB.&lt;/p&gt;' +
       );
     }
 
@@ -402,13 +177,13 @@
         return '<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;"><input style="flex:1;" placeholder="Fokus ' + (i + 1) + '" value="' + escapeAttr(f) + '"></div>';
       }).join("");
       return (
-        '<div class="row">' +
-          '<label>Nama</label><input id="f-about-name" value="' + escapeAttr(a.name) + '">' +
-          '<label>Jabatan</label><input id="f-about-title" value="' + escapeAttr(a.title) + '">' +
-        '</div>' +
+        '&lt;div class="row"&gt;' +
+          '<label>Nama</label><input id="f-about-name" value="' + escapeAttr(a.name) + '&quot;&gt;' +
+          '<label>Jabatan</label><input id="f-about-title" value="' + escapeAttr(a.title) + '&quot;&gt;' +
+        '&lt;/div&gt;' +
         '<div class="full"><label>Bio</label><textarea id="f-about-bio" rows="4">' + escapeAttr(a.bio) + '</textarea></div>' +
-        '<div class="full"><p class="hint">Statistik (bisa dikosongkan):</p>' + stats + '</div>' +
-        '<div class="full"><p class="hint">Fokus / hal yang diprioritaskan:</p>' + focus + '</div>'
+        '<div class="full"><p class="hint">Statistik (bisa dikosongkan):</p>' + stats + '&lt;/div&gt;' +
+        '<div class="full"><p class="hint">Fokus / hal yang diprioritaskan:</p>' + focus + '&lt;/div&gt;'
       );
     }
 
@@ -419,7 +194,7 @@
         return '<div class="item"><input value="' + escapeAttr(sk.name) + '" placeholder="Nama skill"><div class="pct"><label>%</label><input type="number" min="0" max="100" value="' + (sk.level || 0) + '"></div><button class="del" data-del="skill" data-idx="' + i + '">✕</button></div>';
       }).join("");
       return (
-        '<div class="list-editor" id="skillList">' + rows + '</div>' +
+        '<div class="list-editor" id="skillList">' + rows + '&lt;/div&gt;' +
         '<button class="add-btn" id="addSkill">+ Tambah keterampilan</button>'
       );
     }
@@ -441,27 +216,27 @@
           '<div class="item">' +
             '<div><input value="' + escapeAttr(p.title) + '" placeholder="Judul proyek"></div>' +
             '<div style="display:flex;gap:10px;align-items:center;flex:1;flex-wrap:wrap;">' +
-              '<input style="flex:1;min-width:140px;" placeholder="Tech (dipisah spasi)" value="' + escapeAttr((p.tech || []).join(" ")) + '">' +
-              '<input style="width:100%;" placeholder="Link situs (https://)" value="' + escapeAttr(p.link) + '">' +
-              '<input style="width:100%;" placeholder="Repo (https://)" value="' + escapeAttr(p.repo) + '">' +
-              '<input type="date" id="f-project-date-' + i + '" value="' + escapeAttr(p.date || "") + '">' +
-            '</div>' +
+              '<input style="flex:1;min-width:140px;" placeholder="Tech (dipisah spasi)" value="' + escapeAttr((p.tech || []).join(" ")) + '&quot;&gt;' +
+              '<input style="width:100%;" placeholder="Link situs (https://)" value="' + escapeAttr(p.link) + '&quot;&gt;' +
+              '<input style="width:100%;" placeholder="Repo (https://)" value="' + escapeAttr(p.repo) + '&quot;&gt;' +
+              '<input type="date" id="f-project-date-' + i + '" value="' + escapeAttr(p.date || "") + '&quot;&gt;' +
+            '&lt;/div&gt;' +
             '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">' +
               '<div style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:6px;border-radius:6px;background:#fff;border:1px solid var(--border);">' +
                 '<input type="file" id="f-project-photo-' + i + '" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer;border:none;background:transparent;width:100%;height:100%;">' +
                 '<span id="projectPhotoPreview-' + i + '" style="display:flex;align-items:center;gap:6px;font-size:0.8rem;color:var(--text-light);">' +
                   '📷 ' + (p.photo ? 'Foto ada' : 'Foto') +
                 '</span>' +
-              '</div>' +
+              '&lt;/div&gt;' +
               '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">' +
                 '<button class="del" data-del="project" data-idx="' + i + '">✕</button>' +
-              '</div>' +
-            '</div>' +
-          '</div>'
+              '&lt;/div&gt;' +
+            '&lt;/div&gt;' +
+          '&lt;/div&gt;'
         );
       }).join("");
       return (
-        '<div class="list-editor" id="projectList">' + rows + '</div>' +
+        '<div class="list-editor" id="projectList">' + rows + '&lt;/div&gt;' +
         '<button class="add-btn" id="addProject">+ Tambah proyek</button>'
       );
     }
@@ -474,15 +249,15 @@
           '<div class="item">' +
             '<div><input value="' + escapeAttr(e.role) + '" placeholder="Posisi"></div>' +
             '<div style="display:flex;gap:10px;align-items:center;flex:1;flex-wrap:wrap;">' +
-              '<input style="flex:1;min-width:120px;" placeholder="Perusahaan" value="' + escapeAttr(e.company) + '">' +
-              '<input style="width:140px;" placeholder="Periode" value="' + escapeAttr(e.period) + '">' +
-            '</div>' +
+              '<input style="flex:1;min-width:120px;" placeholder="Perusahaan" value="' + escapeAttr(e.company) + '&quot;&gt;' +
+              '<input style="width:140px;" placeholder="Periode" value="' + escapeAttr(e.period) + '&quot;&gt;' +
+            '&lt;/div&gt;' +
             '<button class="del" data-del="experience" data-idx="' + i + '">✕</button>' +
-          '</div>'
+          '&lt;/div&gt;'
         );
       }).join("");
       return (
-        '<div class="list-editor" id="expList">' + rows + '</div>' +
+        '<div class="list-editor" id="expList">' + rows + '&lt;/div&gt;' +
         '<button class="add-btn" id="addExp">+ Tambah pengalaman</button>'
       );
     }
@@ -491,17 +266,17 @@
     function contactForm() {
       var c = SITE.contact || {};
       return (
-        '<div class="row">' +
-          '<label>Email</label><input id="f-contact-email" type="email" value="' + escapeAttr(c.email) + '">' +
-          '<label>Telepon</label><input id="f-contact-phone" value="' + escapeAttr(c.phone) + '">' +
-        '</div>' +
-        '<div class="row">' +
+        '&lt;div class="row"&gt;' +
+          '<label>Email</label><input id="f-contact-email" type="email" value="' + escapeAttr(c.email) + '&quot;&gt;' +
+          '<label>Telepon</label><input id="f-contact-phone" value="' + escapeAttr(c.phone) + '&quot;&gt;' +
+        '&lt;/div&gt;' +
+        '&lt;div class="row"&gt;' +
           '<label>GitHub</label><input id="f-contact-github" value="' + escapeAttr(c.github) + '" placeholder="https://github.com/...">' +
           '<label>LinkedIn</label><input id="f-contact-linkedin" value="' + escapeAttr(c.linkedin) + '" placeholder="https://linkedin.com/in/...">' +
-        '</div>' +
-        '<div class="row">' +
+        '&lt;/div&gt;' +
+        '&lt;div class="row"&gt;' +
           '<label>Twitter / X</label><input id="f-contact-twitter" value="' + escapeAttr(c.twitter) + '" placeholder="https://twitter.com/...">' +
-        '</div>'
+        '&lt;/div&gt;'
       );
     }
 
@@ -517,7 +292,7 @@
           '<div class="field"><label for="ghBranch">Branch</label><input id="ghBranch" value="main"></div>' +
           '<div class="row2"><button class="btn-primary" id="saveGHToken">Simpan token</button><button class="btn-secondary" id="clearGHToken">Hapus token</button></div>' +
           '<div class="row2" style="margin-top:8px;"><button class="btn-primary" id="btnPushData">⬆ Upload data.js ke repo</button></div>' +
-        '</div>' +
+        '&lt;/div&gt;' +
         '<p class="hint" style="margin-top:10px;">Token akan disimpan di browser Anda (localStorage). Hanya Anda yang bisa upload perubahan.</p>'
       );
     }
@@ -617,7 +392,7 @@
           photoFile.addEventListener("change", function (e) {
             var file = photoFile.files[0];
             if (!file) return;
-            if (file.size > 1024 * 1024) { toast("Ukuran foto terlalu besar (maks 1MB)", "", "admin"); return; }
+            if (file.size &gt; 1024 * 1024) { toast("Ukuran foto terlalu besar (maks 1MB)", "", "admin"); return; }
             var reader = new FileReader();
             reader.onload = function (e) {
               $("#f-site-photo").value = e.target.result;
@@ -641,7 +416,7 @@
           fileInput.addEventListener("change", function (e) {
             var file = fileInput.files[0];
             if (!file) return;
-            if (file.size > 1024 * 1024) { toast("Ukuran foto terlalu besar (maks 1MB)", "", "admin"); return; }
+            if (file.size &gt; 1024 * 1024) { toast("Ukuran foto terlalu besar (maks 1MB)", "", "admin"); return; }
             var reader = new FileReader();
             reader.onload = function (e) {
               getVal(["projects", idx, "photo"]).splice(0, 1, e.target.result);
@@ -701,7 +476,7 @@
     // ---------- ACCESS & PERSIST ----------
     function getVal(path) {
       var cur = SITE;
-      for (var i = 0; i < path.length; i++) {
+      for (var i = 0; i &lt; path.length; i++) {
         if (cur == null) return [];
         cur = cur[path[i]];
       }
@@ -709,7 +484,7 @@
     }
     function setValue(path, val) {
       var cur = SITE;
-      for (var i = 0; i < path.length - 1; i++) { cur = cur[path[i]]; }
+      for (var i = 0; i &lt; path.length - 1; i++) { cur = cur[path[i]]; }
       cur[path[path.length - 1]] = val;
       STATE.draft = null; // force re-read next time
       persist();
@@ -761,7 +536,7 @@
         preview.querySelectorAll("nav a").forEach(function (a) {
           a.addEventListener("click", function (e) { e.preventDefault(); });
         });
-      } catch (e) { preview.innerHTML = "<p class='note'>Gagal me-render preview.</p>"; }
+      } catch (e) { preview.innerHTML = "&lt;p class='note'&gt;Gagal me-render preview.&lt;/p&gt;"; }
     }
 
     function guestHTML() {
@@ -769,7 +544,7 @@
       function imgF() {
         var ph = s.photo; if (ph) return ph;
         return "data:image/svg+xml," + encodeURIComponent(
-          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="#845EC2" width="100" height="100" rx="50"/><text x="50" y="58" font-size="54" font-family="Segoe UI,sans-serif" font-weight="800" fill="#fff" text-anchor="middle">' + escapeHtml(s.avatar || "U") + "</text></svg>"
+          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="#845EC2" width="100" height="100" rx="50"/><text x="50" y="58" font-size="54" font-family="Segoe UI,sans-serif" font-weight="800" fill="#fff" text-anchor="middle">' + escapeHtml(s.avatar || "U") + "&lt;/text&gt;&lt;/svg&gt;"
         );
       }
       function esc(x) { return escapeHtml(x); }
@@ -805,7 +580,7 @@
         '<section class="section" id="keterampilan" style="padding:56px 24px;"><div style="max-width:1100px;margin:0 auto;padding:0 24px;"><div class="section-head" style="display:flex;align-items:center;gap:12px;margin-bottom:28px;"><span class="badge" style="background:#845EC2;color:#fff;padding:5px 14px;border-radius:999px;font-size:0.75rem;font-weight:700;">Keterampilan</span><h2>Keterampilan</h2></div><div class="skills-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;">' + skills + '</div></div></section>' +
         '<section class="section" id="proyek" style="padding:56px 24px;"><div style="max-width:1100px;margin:0 auto;padding:0 24px;"><div class="section-head" style="display:flex;align-items:center;gap:12px;margin-bottom:28px;"><span class="badge" style="background:#845EC2;color:#fff;padding:5px 14px;border-radius:999px;font-size:0.75rem;font-weight:700;">Proyek</span><h2>Proyek</h2></div><div class="section-grid" style="display:grid;gap:24px;">' + projects + '</div></div></section>' +
         '<section class="section" id="pengalaman" style="padding:56px 24px;"><div style="max-width:1100px;margin:0 auto;padding:0 24px;"><div class="section-head" style="display:flex;align-items:center;gap:12px;margin-bottom:28px;"><span class="badge" style="background:#845EC2;color:#fff;padding:5px 14px;border-radius:999px;font-size:0.75rem;font-weight:700;">Pengalaman</span><h2>Pengalaman</h2></div><div class="section-grid" style="display:grid;gap:24px;">' + experiences + '</div></div></section>' +
-        '<section class="section section-alt" id="kontak" style="padding:56px 24px;"><div style="max-width:1100px;margin:0 auto;padding:0 24px;"><div class="section-head" style="display:flex;align-items:center;gap:12px;margin-bottom:28px;"><span class="badge" style="background:#845EC2;color:#fff;padding:5px 14px;border-radius:999px;font-size:0.75rem;font-weight:700;">Kontak</span><h2>Kontak</h2></div><div class="section-grid" style="display:grid;gap:24px;"><div class="section-grid" style="grid-template-columns:1fr 1fr;"><div class="contact-item" style="background:#fff;border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(44,61,46,0.08);text-align:center;"><div class="ic" style="font-size:1.6rem;">✉</div><div class="label" style="font-size:0.78rem;color:#8a8a8a;">Email</div><div class="val" style="font-size:0.95rem;font-weight:700;color:#2C3D2E;"><a href="mailto:' + esc(c.email) + '">' + esc(c.email) + '</a></div></div><div class="contact-item" style="background:#fff;border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(44,61,46,0.08);text-align:center;"><div class="ic" style="font-size:1.6rem;">📱</div><div class="label" style="font-size:0.78rem;color:#8a8a8a;">Telepon</div><div class="val" style="font-size:0.95rem;font-weight:700;color:#2C3D2E;">' + (c.phone ? esc(c.phone) : '<span style="color:#8a8a8a;">Belum diatur</span>') + '</div></div></div><div class="contact-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;"><a class="contact-item" href="' + safe(u(c.github)) + '" style="text-decoration:none;"><div class="ic" style="font-size:1.6rem;">🐙</div><div class="label" style="font-size:0.78rem;color:#8a8a8a;">GitHub</div><div class="val" style="font-size:0.95rem;font-weight:700;color:#2C3D2E;">github.com</div></a><a class="contact-item" href="' + safe(u(c.linkedin)) + '" style="text-decoration:none;"><div class="ic" style="font-size:1.6rem;">💼</div><div class="label" style="font-size:0.78rem;color:#8a8a8a;">LinkedIn</div><div class="val" style="font-size:0.95rem;font-weight:700;color:#2C3D2E;">linkedin.com</div></a></div></div></section>' +
+        '<section class="section section-alt" id="kontak" style="padding:56px 24px;"><div style="max-width:1100px;margin:0 auto;padding:0 24px;"><div class="section-head" style="display:flex;align-items:center;gap:12px;margin-bottom:28px;"><span class="badge" style="background:#845EC2;color:#fff;padding:5px 14px;border-radius:999px;font-size:0.75rem;font-weight:700;">Kontak</span><h2>Kontak</h2></div><div class="section-grid" style="display:grid;gap:24px;"><div class="section-grid" style="grid-template-columns:1fr 1fr;"><div class="contact-item" style="background:#fff;border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(44,61,46,0.08);text-align:center;"><div class="ic" style="font-size:1.6rem;">✉</div><div class="label" style="font-size:0.78rem;color:#8a8a8a;">Email</div><div class="val" style="font-size:0.95rem;font-weight:700;color:#2C3D2E;"><a href="mailto:' + esc(c.email) + '&quot;&gt;' + esc(c.email) + '</a></div></div><div class="contact-item" style="background:#fff;border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(44,61,46,0.08);text-align:center;"><div class="ic" style="font-size:1.6rem;">📱</div><div class="label" style="font-size:0.78rem;color:#8a8a8a;">Telepon</div><div class="val" style="font-size:0.95rem;font-weight:700;color:#2C3D2E;">' + (c.phone ? esc(c.phone) : '<span style="color:#8a8a8a;">Belum diatur</span>') + '</div></div></div><div class="contact-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;"><a class="contact-item" href="' + safe(u(c.github)) + '" style="text-decoration:none;"><div class="ic" style="font-size:1.6rem;">🐙</div><div class="label" style="font-size:0.78rem;color:#8a8a8a;">GitHub</div><div class="val" style="font-size:0.95rem;font-weight:700;color:#2C3D2E;">github.com</div></a><a class="contact-item" href="' + safe(u(c.linkedin)) + '" style="text-decoration:none;"><div class="ic" style="font-size:1.6rem;">💼</div><div class="label" style="font-size:0.78rem;color:#8a8a8a;">LinkedIn</div><div class="val" style="font-size:0.95rem;font-weight:700;color:#2C3D2E;">linkedin.com</div></a></div></div></section>' +
         '<footer><div class="footer-inner" style="background:#2C3D2E;color:#fff;padding:32px 24px;border-top:4px solid #845EC2;"><span class="copyright" style="font-size:0.82rem;opacity:0.75;">© 2026 ' + esc(s.title) + '. All rights reserved.</span><span class="admin-link" style="font-size:0.82rem;color:#fff;opacity:0.7;">Admin: admin.html</span></div></footer>'
       );
     }
@@ -897,6 +672,4 @@
       }
     }
   })();
-  </script>
-</body>
-</html>
+  
