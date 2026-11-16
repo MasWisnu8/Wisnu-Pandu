@@ -184,10 +184,15 @@
   function contact() {
     var c = SITE.contact || {};
     var email = c.email || "mail@example.com";
-    var github = c.github || "https://github.com";
-    var linkedin = c.linkedin || "https://linkedin.com";
-    var twitter = c.twitter || "https://twitter.com";
     var phone = c.phone || "";
+    var github = c.github || "";
+    var linkedin = c.linkedin || "";
+    var twitter = c.twitter || "";
+
+    function siteItem(ic, label, val, url) {
+      if (!url) return "";
+      return '<a class="contact-item" href="' + safeUrl(url) + '" target="_blank" rel="noopener"><div class="ic">' + ic + '</div><div class="label">' + label + '</div><div class="val">' + val + '</div></a>';
+    }
 
     return (
       '<section class="section section-alt" id="kontak"><div class="wrap">' +
@@ -195,11 +200,11 @@
         '<div class="section-grid">' +
           '<div class="section-grid" style="grid-template-columns:1fr 1fr;">' +
             '<div class="contact-item"><div class="ic">✉</div><div class="label">Email</div><div class="val"><a href="mailto:' + escapeHtml(email) + '">' + escapeHtml(email) + '</a></div></div>' +
-            '<div class="contact-item"><div class="ic">📱</div><div class="label">Telepon</div><div class="val">' + (phone ? escapeHtml(phone) : '<span style="color:#8a8a8a;">Belum diatur</span>') + '</div></div>' +
+            (phone ? '<div class="contact-item"><div class="ic">📱</div><div class="label">Telepon</div><div class="val">' + escapeHtml(phone) + '</div></div>' : '') +
           '</div>' +
           '<div class="contact-grid">' +
-            '<a class="contact-item" href="' + safeUrl(github) + '" target="_blank" rel="noopener"><div class="ic">🐙</div><div class="label">GitHub</div><div class="val">github.com</div></a>' +
-            '<a class="contact-item" href="' + safeUrl(linkedin) + '" target="_blank" rel="noopener"><div class="ic">💼</div><div class="label">LinkedIn</div><div class="val">linkedin.com</div></a>' +
+            siteItem('🐙', 'GitHub', 'github.com', github) +
+            siteItem('💼', 'LinkedIn', 'linkedin.com', linkedin) +
           '</div>' +
         '</div>' +
       '</div></section>'
