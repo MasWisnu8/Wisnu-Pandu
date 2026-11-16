@@ -1,5 +1,434 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin — Wisnu Pandu Hidayat</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Login overlay styles */
+        .login-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            display: none;
+        }
+        .login-overlay.active {
+            display: flex;
+        }
+        .login-modal {
+            background: #fff;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+        .login-modal h2 {
+            margin: 0 0 12px;
+            color: #2C3D2E;
+            font-size: 1.3rem;
+        }
+        .login-modal .sub {
+            color: #8a8a8a;
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+        }
+        .login-modal .form-group {
+            margin-bottom: 12px;
+        }
+        .login-modal label {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 0.85rem;
+            color: #2C3D2E;
+        }
+        .login-modal input {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.95rem;
+        }
+        .login-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        .login-actions button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .login-actions .btn-primary {
+            background: #845EC2;
+            color: #fff;
+        }
+        .login-actions .btn-primary:hover {
+            background: #7049B0;
+        }
+        .login-actions .btn-secondary {
+            background: #2C3D2E;
+            color: #fff;
+        }
+        .login-actions .btn-secondary:hover {
+            background: #1E2D24;
+        }
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .toast {
+            background: #2C3D2E;
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            max-width: 400px;
+            animation: slideIn 0.3s ease;
+        }
+        .toast.admin {
+            background: #845EC2;
+        }
+        .toast .sub {
+            font-size: 0.8rem;
+            opacity: 0.85;
+            margin-top: 4px;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        /* Admin layout */
+        .admin-page {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .admin-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background: #2C3D2E;
+            color: #fff;
+        }
+        .admin-header .right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .admin-layout {
+            display: flex;
+            flex: 1;
+            gap: 20px;
+            padding: 20px;
+        }
+        .sidebar {
+            width: 240px;
+            background: #2C3D2E;
+            color: #fff;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .sidebar .nav button {
+            padding: 10px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            width: 100%;
+            text-align: left;
+        }
+        .sidebar .nav button.active {
+            background: #845EC2;
+            color: #fff;
+        }
+        .sidebar .nav button:hover {
+            background: #845EC2;
+            color: #fff;
+        }
+        .sidebar .sep {
+            height: 1px;
+            background: #444;
+            margin: 8px 0;
+        }
+        .editor {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .editor-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: #f6f4f0;
+            border-radius: 8px;
+        }
+        .editor-body {
+            flex: 1;
+            display: flex;
+            gap: 20px;
+        }
+        .preview {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fff;
+        }
+        .formpanel {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f6f4f0;
+        }
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .toast {
+            background: #2C3D2E;
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            max-width: 400px;
+            animation: slideIn 0.3s ease;
+        }
+        .toast.admin {
+            background: #845EC2;
+        }
+        .toast .sub {
+            font-size: 0.8rem;
+            opacity: 0.85;
+            margin-top: 4px;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .github-bar {
+            background: #fff;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .field {
+            margin-bottom: 12px;
+        }
+        .field label {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 0.85rem;
+            color: #2C3D2E;
+        }
+        .field input {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        .row2 {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        .row2 button {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background: #845EC2;
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: #7049B0;
+        }
+        .btn-secondary {
+            background: #2C3D2E;
+            color: #fff;
+        }
+        .btn-secondary:hover {
+            background: #1E2D24;
+        }
+        .login-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            display: none;
+        }
+        .login-overlay.active {
+            display: flex;
+        }
+        .login-modal {
+            background: #fff;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+        .login-modal h2 {
+            margin: 0 0 12px;
+            color: #2C3D2E;
+            font-size: 1.3rem;
+        }
+        .login-modal .sub {
+            color: #8a8a8a;
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+        }
+        .login-modal .field {
+            margin-bottom: 12px;
+        }
+        .login-modal label {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 0.85rem;
+            color: #2C3D2E;
+        }
+        .login-modal input {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.95rem;
+        }
+        .login-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        .login-actions button {
+            flex: 1;
+            padding: 10px 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .login-actions .btn-primary {
+            background: #845EC2;
+            color: #fff;
+        }
+        .login-actions .btn-primary:hover {
+            background: #7049B0;
+        }
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
 
-  (function () {
+<!-- Login Overlay -->
+<div class="login-overlay" id="loginOverlay">
+    <div class="login-modal">
+        <h2>🔒 Admin Login</h2>
+        <p class="sub">Silakan masukkan password untuk masuk ke menu admin.</p>
+        <div class="field">
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" placeholder="Password" autocomplete="off">
+        </div>
+        <div class="login-actions">
+            <button class="btn-primary" id="loginBtn">Masuk</button>
+        </div>
+        <p class="sub"><small>Password default: <strong>admin123</strong></small></p>
+    </div>
+</div>
+
+<!-- Admin Page -->
+<div class="admin-page">
+    <div class="admin-header">
+        <h1><span class="badge">Admin Panel</span> Wisnu Pandu</h1>
+        <div class="right">
+            <span class="badge" style="background:#2C3D2E;color:#fff;">Edit Hanya untuk Admin</span>
+            <label class="theme-switcher">
+                <input type="checkbox" id="themeToggle">
+                <span style="font-size:0.85rem;">🌙 Mode Gelap</span>
+            </label>
+            <button class="btn-secondary" id="guestLink" title="Buka situs pengunjung">◉ Buka Guest</button>
+        </div>
+    </div>
+
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <h2 id="sectionTitle">Profil & Umum</h2>
+            <ul class="nav">
+                <li><button data-section="profile" class="active">👤 Profil & Umum</button></li>
+                <li><button data-section="about">📝 Tentang</button></li>
+                <li><button data-section="skills">🛠 Keterampilan</button></li>
+                <li><button data-section="projects">📦 Proyek</button></li>
+                <li><button data-section="experience">🕰 Pengalaman</button></li>
+                <li><button data-section="contact">✉ Kontak</button></li>
+                <li><button data-section="settings">⚙ Pengaturan & Simpan</button></li>
+                <li class="sep"></li>
+                <li><button id="btnSaveDraft">💾 Simpan Draft</button></li>
+                <li><button id="btnPublish">⬆ Upload ke Repo</button></li>
+            </ul>
+        </aside>
+
+        <div class="editor">
+            <div class="editor-top">
+                <span class="title" id="editorTitle">Profil & Umum</span>
+                <div class="preview-toggle">
+                    <select id="previewMode">
+                        <option value="iframe">Lihat iframe (live)</option>
+                        <option value="full">Full preview</option>
+                        <option value="none">Matikan</option>
+                    </select>
+                </div>
+            </div>
+            <div class="editor-body">
+                <div class="preview" id="previewPane">
+                    <iframe src="index.html" title="Preview guest" id="previewFrame"></iframe>
+                </div>
+                <div class="formpanel" id="formPanel"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="data.js"></script>
+
     "use strict";
     var SITE = window.SITE;
     if (!SITE || !SITE.site) { alert("Data belum siap. Muat ulang halaman."); return; }
@@ -171,19 +600,19 @@
     function aboutForm() {
       var a = SITE.about || {};
       var stats = (a.stats || []).map(function (st, i) {
-        return '<div class="row"><label>Statistik ' + (i + 1) + '</label><div style="display:flex;gap:8px;flex-wrap:wrap;"><input style="flex:1;min-width:120px;" placeholder="Label" value="' + escapeAttr(st.label) + '"><input style="flex:1;min-width:120px;" placeholder="Nilai" value="' + escapeAttr(st.value) + '"></div></div>';
+        return '&lt;div class="row"><label>Statistik ' + (i + 1) + '&lt;/label&gt;<div style="display:flex;gap:8px;flex-wrap:wrap;"><input style="flex:1;min-width:120px;" placeholder="Label" value="' + escapeAttr(st.label) + '"><input style="flex:1;min-width:120px;" placeholder="Nilai" value="' + escapeAttr(st.value) + '"></div></div>';
       }).join("");
       var focus = (a.focus || []).map(function (f, i) {
-        return '<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;"><input style="flex:1;" placeholder="Fokus ' + (i + 1) + '" value="' + escapeAttr(f) + '"></div>';
+        return '&lt;div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;"><input style="flex:1;" placeholder="Fokus ' + (i + 1) + '" value="' + escapeAttr(f) + '"></div>';
       }).join("");
       return (
         '&lt;div class="row"&gt;' +
-          '<label>Nama</label><input id="f-about-name" value="' + escapeAttr(a.name) + '&quot;&gt;' +
-          '<label>Jabatan</label><input id="f-about-title" value="' + escapeAttr(a.title) + '&quot;&gt;' +
+          '&lt;label>Nama</label><input id="f-about-name" value="' + escapeAttr(a.name) + '&quot;&gt;' +
+          '&lt;label>Jabatan</label><input id="f-about-title" value="' + escapeAttr(a.title) + '&quot;&gt;' +
         '&lt;/div&gt;' +
-        '<div class="full"><label>Bio</label><textarea id="f-about-bio" rows="4">' + escapeAttr(a.bio) + '</textarea></div>' +
-        '<div class="full"><p class="hint">Statistik (bisa dikosongkan):</p>' + stats + '&lt;/div&gt;' +
-        '<div class="full"><p class="hint">Fokus / hal yang diprioritaskan:</p>' + focus + '&lt;/div&gt;'
+        '&lt;div class="full"><label>Bio</label><textarea id="f-about-bio" rows="4">' + escapeAttr(a.bio) + '&lt;/textarea&gt;</div>' +
+        '&lt;div class="full"><p class="hint">Statistik (bisa dikosongkan):</p>' + stats + '&lt;/div&gt;' +
+        '&lt;div class="full"><p class="hint">Fokus / hal yang diprioritaskan:</p>' + focus + '&lt;/div&gt;'
       );
     }
 
@@ -191,11 +620,11 @@
     function skillsForm() {
       var skills = SITE.skills || [];
       var rows = skills.map(function (sk, i) {
-        return '<div class="item"><input value="' + escapeAttr(sk.name) + '" placeholder="Nama skill"><div class="pct"><label>%</label><input type="number" min="0" max="100" value="' + (sk.level || 0) + '"></div><button class="del" data-del="skill" data-idx="' + i + '">✕</button></div>';
+        return '&lt;div class="item"><input value="' + escapeAttr(sk.name) + '" placeholder="Nama skill"><div class="pct"><label>%</label><input type="number" min="0" max="100" value="' + (sk.level || 0) + '"></div><button class="del" data-del="skill" data-idx="' + i + '">✕</button></div>';
       }).join("");
       return (
-        '<div class="list-editor" id="skillList">' + rows + '&lt;/div&gt;' +
-        '<button class="add-btn" id="addSkill">+ Tambah keterampilan</button>'
+        '&lt;div class="list-editor" id="skillList">' + rows + '&lt;/div&gt;' +
+        '&lt;button class="add-btn" id="addSkill">+ Tambah keterampilan</button>'
       );
     }
 
@@ -207,37 +636,37 @@
         if (p.photo) {
           // p.photo bisa berupa data URL (base64) atau URL biasa
           if (p.photo.startsWith("data:")) {
-            photoPreview = '<img src="' + escapeAttr(p.photo) + '" style="width:40px;height:40px;object-fit:cover;border-radius:50%;border:2px solid var(--primary);">';
+            photoPreview = '&lt;img src="' + escapeAttr(p.photo) + '" style="width:40px;height:40px;object-fit:cover;border-radius:50%;border:2px solid var(--primary);">';
           } else {
-            photoPreview = '<img src="' + escapeAttr(p.photo) + '" style="width:40px;height:40px;object-fit:cover;border-radius:50%;border:2px solid var(--primary);">';
+            photoPreview = '&lt;img src="' + escapeAttr(p.photo) + '" style="width:40px;height:40px;object-fit:cover;border-radius:50%;border:2px solid var(--primary);">';
           }
         }
         return (
-          '<div class="item">' +
-            '<div><input value="' + escapeAttr(p.title) + '" placeholder="Judul proyek"></div>' +
-            '<div style="display:flex;gap:10px;align-items:center;flex:1;flex-wrap:wrap;">' +
-              '<input style="flex:1;min-width:140px;" placeholder="Tech (dipisah spasi)" value="' + escapeAttr((p.tech || []).join(" ")) + '&quot;&gt;' +
-              '<input style="width:100%;" placeholder="Link situs (https://)" value="' + escapeAttr(p.link) + '&quot;&gt;' +
-              '<input style="width:100%;" placeholder="Repo (https://)" value="' + escapeAttr(p.repo) + '&quot;&gt;' +
-              '<input type="date" id="f-project-date-' + i + '" value="' + escapeAttr(p.date || "") + '&quot;&gt;' +
+          '&lt;div class="item">' +
+            '&lt;div><input value="' + escapeAttr(p.title) + '" placeholder="Judul proyek"></div>' +
+            '&lt;div style="display:flex;gap:10px;align-items:center;flex:1;flex-wrap:wrap;">' +
+              '&lt;input style="flex:1;min-width:140px;" placeholder="Tech (dipisah spasi)" value="' + escapeAttr((p.tech || []).join(" ")) + '&quot;&gt;' +
+              '&lt;input style="width:100%;" placeholder="Link situs (https://)" value="' + escapeAttr(p.link) + '&quot;&gt;' +
+              '&lt;input style="width:100%;" placeholder="Repo (https://)" value="' + escapeAttr(p.repo) + '&quot;&gt;' +
+              '&lt;input type="date" id="f-project-date-' + i + '" value="' + escapeAttr(p.date || "") + '&quot;&gt;' +
             '&lt;/div&gt;' +
-            '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">' +
-              '<div style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:6px;border-radius:6px;background:#fff;border:1px solid var(--border);">' +
-                '<input type="file" id="f-project-photo-' + i + '" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer;border:none;background:transparent;width:100%;height:100%;">' +
-                '<span id="projectPhotoPreview-' + i + '" style="display:flex;align-items:center;gap:6px;font-size:0.8rem;color:var(--text-light);">' +
+            '&lt;div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">' +
+              '&lt;div style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:6px;border-radius:6px;background:#fff;border:1px solid var(--border);">' +
+                '&lt;input type="file" id="f-project-photo-' + i + '" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer;border:none;background:transparent;width:100%;height:100%;">' +
+                '&lt;span id="projectPhotoPreview-' + i + '" style="display:flex;align-items:center;gap:6px;font-size:0.8rem;color:var(--text-light);">' +
                   '📷 ' + (p.photo ? 'Foto ada' : 'Foto') +
-                '</span>' +
+                '&lt;/span&gt;' +
               '&lt;/div&gt;' +
-              '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">' +
-                '<button class="del" data-del="project" data-idx="' + i + '">✕</button>' +
+              '&lt;div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">' +
+                '&lt;button class="del" data-del="project" data-idx="' + i + '">✕</button>' +
               '&lt;/div&gt;' +
             '&lt;/div&gt;' +
           '&lt;/div&gt;'
         );
       }).join("");
       return (
-        '<div class="list-editor" id="projectList">' + rows + '&lt;/div&gt;' +
-        '<button class="add-btn" id="addProject">+ Tambah proyek</button>'
+        '&lt;div class="list-editor" id="projectList">' + rows + '&lt;/div&gt;' +
+        '&lt;button class="add-btn" id="addProject">+ Tambah proyek</button>'
       );
     }
 
@@ -246,19 +675,19 @@
       var exps = SITE.experience || [];
       var rows = exps.map(function (e, i) {
         return (
-          '<div class="item">' +
-            '<div><input value="' + escapeAttr(e.role) + '" placeholder="Posisi"></div>' +
-            '<div style="display:flex;gap:10px;align-items:center;flex:1;flex-wrap:wrap;">' +
-              '<input style="flex:1;min-width:120px;" placeholder="Perusahaan" value="' + escapeAttr(e.company) + '&quot;&gt;' +
-              '<input style="width:140px;" placeholder="Periode" value="' + escapeAttr(e.period) + '&quot;&gt;' +
+          '&lt;div class="item">' +
+            '&lt;div><input value="' + escapeAttr(e.role) + '" placeholder="Posisi"></div>' +
+            '&lt;div style="display:flex;gap:10px;align-items:center;flex:1;flex-wrap:wrap;">' +
+              '&lt;input style="flex:1;min-width:120px;" placeholder="Perusahaan" value="' + escapeAttr(e.company) + '&quot;&gt;' +
+              '&lt;input style="width:140px;" placeholder="Periode" value="' + escapeAttr(e.period) + '&quot;&gt;' +
             '&lt;/div&gt;' +
-            '<button class="del" data-del="experience" data-idx="' + i + '">✕</button>' +
+            '&lt;button class="del" data-del="experience" data-idx="' + i + '">✕</button>' +
           '&lt;/div&gt;'
         );
       }).join("");
       return (
-        '<div class="list-editor" id="expList">' + rows + '&lt;/div&gt;' +
-        '<button class="add-btn" id="addExp">+ Tambah pengalaman</button>'
+        '&lt;div class="list-editor" id="expList">' + rows + '&lt;/div&gt;' +
+        '&lt;button class="add-btn" id="addExp">+ Tambah pengalaman</button>'
       );
     }
 
@@ -267,15 +696,15 @@
       var c = SITE.contact || {};
       return (
         '&lt;div class="row"&gt;' +
-          '<label>Email</label><input id="f-contact-email" type="email" value="' + escapeAttr(c.email) + '&quot;&gt;' +
-          '<label>Telepon</label><input id="f-contact-phone" value="' + escapeAttr(c.phone) + '&quot;&gt;' +
+          '&lt;label>Email</label><input id="f-contact-email" type="email" value="' + escapeAttr(c.email) + '&quot;&gt;' +
+          '&lt;label>Telepon</label><input id="f-contact-phone" value="' + escapeAttr(c.phone) + '&quot;&gt;' +
         '&lt;/div&gt;' +
         '&lt;div class="row"&gt;' +
-          '<label>GitHub</label><input id="f-contact-github" value="' + escapeAttr(c.github) + '" placeholder="https://github.com/...">' +
-          '<label>LinkedIn</label><input id="f-contact-linkedin" value="' + escapeAttr(c.linkedin) + '" placeholder="https://linkedin.com/in/...">' +
+          '&lt;label>GitHub</label><input id="f-contact-github" value="' + escapeAttr(c.github) + '" placeholder="https://github.com/...">' +
+          '&lt;label>LinkedIn</label><input id="f-contact-linkedin" value="' + escapeAttr(c.linkedin) + '" placeholder="https://linkedin.com/in/...">' +
         '&lt;/div&gt;' +
         '&lt;div class="row"&gt;' +
-          '<label>Twitter / X</label><input id="f-contact-twitter" value="' + escapeAttr(c.twitter) + '" placeholder="https://twitter.com/...">' +
+          '&lt;label>Twitter / X</label><input id="f-contact-twitter" value="' + escapeAttr(c.twitter) + '" placeholder="https://twitter.com/...">' +
         '&lt;/div&gt;'
       );
     }
@@ -284,16 +713,16 @@
     function settingsForm() {
       var s = SITE.site;
       return (
-        '<p class="hint">Siapkan token GitHub (Personal Access Token) untuk mengirim perubahan langsung ke repo:</p>' +
-        '<div class="github-bar">' +
-          '<div class="field"><label for="ghToken">GitHub Token (scope: repo / public_repo)</label><input id="ghToken" type="password" placeholder="ghp_..."></div>' +
-          '<div class="field"><label for="ghOwner">Username</label><input id="ghOwner" value="MasWisnu8"></div>' +
-          '<div class="field"><label for="ghRepo">Nama Repo</label><input id="ghRepo" value="Wisnu-Pandu"></div>' +
-          '<div class="field"><label for="ghBranch">Branch</label><input id="ghBranch" value="main"></div>' +
-          '<div class="row2"><button class="btn-primary" id="saveGHToken">Simpan token</button><button class="btn-secondary" id="clearGHToken">Hapus token</button></div>' +
-          '<div class="row2" style="margin-top:8px;"><button class="btn-primary" id="btnPushData">⬆ Upload data.js ke repo</button></div>' +
+        '&lt;p class="hint">Siapkan token GitHub (Personal Access Token) untuk mengirim perubahan langsung ke repo:</p>' +
+        '&lt;div class="github-bar">' +
+          '&lt;div class="field"><label for="ghToken">GitHub Token (scope: repo / public_repo)</label><input id="ghToken" type="password" placeholder="ghp_..."></div>' +
+          '&lt;div class="field"><label for="ghOwner">Username</label><input id="ghOwner" value="MasWisnu8"></div>' +
+          '&lt;div class="field"><label for="ghRepo">Nama Repo</label><input id="ghRepo" value="Wisnu-Pandu"></div>' +
+          '&lt;div class="field"><label for="ghBranch">Branch</label><input id="ghBranch" value="main"></div>' +
+          '&lt;div class="row2"><button class="btn-primary" id="saveGHToken">Simpan token</button><button class="btn-secondary" id="clearGHToken">Hapus token</button></div>' +
+          '&lt;div class="row2" style="margin-top:8px;"><button class="btn-primary" id="btnPushData">⬆ Upload data.js ke repo</button></div>' +
         '&lt;/div&gt;' +
-        '<p class="hint" style="margin-top:10px;">Token akan disimpan di browser Anda (localStorage). Hanya Anda yang bisa upload perubahan.</p>'
+        '&lt;p class="hint" style="margin-top:10px;">Token akan disimpan di browser Anda (localStorage). Hanya Anda yang bisa upload perubahan.</p>'
       );
     }
 
@@ -549,45 +978,45 @@
       }
       function esc(x) { return escapeHtml(x); }
       var stats = (a.stats || []).map(function (st) {
-        return '<div class="stat"><div class="stat-number">' + esc(st.value) + '</div><div class="stat-label">' + esc(st.label) + '</div></div>';
+        return '&lt;div class="stat"><div class="stat-number">' + esc(st.value) + '&lt;/div&gt;<div class="stat-label">' + esc(st.label) + '&lt;/div&gt;</div>';
       }).join("");
       var skills = sc.map(function (sk) {
-        return '<div class="skill"><div class="name">' + esc(sk.name) + '</div><div class="level">' + (sk.level || 0) + '%' + bar(sk.level) + '</div></div>';
+        return '&lt;div class="skill"><div class="name">' + esc(sk.name) + '&lt;/div&gt;<div class="level">' + (sk.level || 0) + '%' + bar(sk.level) + '&lt;/div&gt;</div>';
       }).join("");
       var projects = pj.map(function (p, i) {
-        return '<div class="project-card"><div class="title">' + esc(p.title) + '</div><div class="tech">' + (p.tech || []).map(function (t) { return '<span>' + esc(t) + '</span>'; }).join("") + '</div><p>' + esc(p.description) + '</p><div class="hero-actions" style="margin-top:14px;"><a class="btn btn-outline" href="' + safe(u(p.link)) + '">Lihat</a><a class="btn btn-outline" href="' + safe(u(p.repo)) + '">Kode</a></div></div>';
+        return '&lt;div class="project-card"><div class="title">' + esc(p.title) + '&lt;/div&gt;<div class="tech">' + (p.tech || []).map(function (t) { return '&lt;span>' + esc(t) + '&lt;/span&gt;'; }).join("") + '&lt;/div&gt;<p>' + esc(p.description) + '&lt;/p&gt;<div class="hero-actions" style="margin-top:14px;"><a class="btn btn-outline" href="' + safe(u(p.link)) + '">Lihat</a><a class="btn btn-outline" href="' + safe(u(p.repo)) + '">Kode</a></div></div>';
       }).join("");
       var experiences = exp.map(function (e) {
-        return '<div class="exp-card"><div class="role">' + esc(e.role) + '</div><div class="company">' + esc(e.company) + '</div><div class="period">' + esc(e.period) + '</div><p>' + esc(e.description) + '</p></div>';
+        return '&lt;div class="exp-card"><div class="role">' + esc(e.role) + '&lt;/div&gt;<div class="company">' + esc(e.company) + '&lt;/div&gt;<div class="period">' + esc(e.period) + '&lt;/div&gt;<p>' + esc(e.description) + '&lt;/p&gt;</div>';
       }).join("");
       return (
-        '<header style="position:sticky;top:0;background:#fff;border-bottom:1px solid #e3e0da;"><div style="max-width:1100px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;"><a style="display:flex;align-items:center;gap:10px;font-size:1.3rem;font-weight:800;color:#2C3D2E;"><span style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#845EC2,#0081CF);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.05rem;">WP</span>Wisnu Pandu</a><nav><ul style="list-style:none;display:flex;gap:6px;">' +
-        '<li><a style="padding:8px 14px;border-radius:8px;text-decoration:none;color:#5c5c5c;font-weight:600;" href="#tentang">Tentang</a></li>' +
-        '<li><a style="padding:8px 14px;border-radius:8px;text-decoration:none;color:#5c5c5c;font-weight:600;" href="#keterampilan">Keterampilan</a></li>' +
-        '<li><a style="padding:8px 14px;border-radius:8px;text-decoration:none;color:#5c5c5c;font-weight:600;" href="#proyek">Proyek</a></li>' +
-        '<li><a style="padding:8px 14px;border-radius:8px;text-decoration:none;color:#5c5c5c;font-weight:600;" href="#pengalaman">Pengalaman</a></li>' +
-        '<li><a style="padding:8px 14px;border-radius:8px;text-decoration:none;color:#5c5c5c;font-weight:600;" href="#kontak">Kontak</a></li>' +
-        '</ul></nav></div></header>' +
-        '<section class="hero" style="padding:64px 24px 56px;text-align:center;background:linear-gradient(160deg,#2C3D2E 0%,#1F2E24 55%,#243028 100%);color:#fff;"><div style="max-width:1100px;margin:0 auto;padding:0 24px;">' +
-        '<span class="hero-badge" style="display:inline-block;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.22);padding:6px 16px;border-radius:999px;font-size:0.8rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">Halo, Saya</span>' +
-        '<div class="hero-avatar" style="width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,0.14);border:4px solid rgba(255,255,255,0.28);margin:0 auto 22px;display:flex;align-items:center;justify-content:center;font-size:2.6rem;font-weight:800;overflow:hidden;"><img src="' + imgF() + '" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>' +
-        '<h1 style="color:#fff;font-size:2.4rem;font-weight:800;letter-spacing:-1px;">' + esc(s.title) + '</h1>' +
-        '<p class="subtitle" style="font-size:1.15rem;opacity:0.85;margin-bottom:14px;">' + esc(s.subtitle) + '</p>' +
-        '<p class="tagline" style="font-size:1rem;opacity:0.75;max-width:620px;margin:0 auto 26px;">' + esc(s.tagline) + '</p>' +
-        '<div class="hero-actions" style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;"><a class="btn btn-primary" style="background:#fff;color:#2C3D2E;">Pelajari</a><a class="btn btn-outline" style="background:transparent;color:#fff;border:2px solid rgba(255,255,255,0.35);">Proyek</a></div>' +
-        '</div></section>' +
-        '<section class="section" id="tentang" style="padding:56px 24px;"><div style="max-width:1100px;margin:0 auto;padding:0 24px;"><div class="section-head" style="display:flex;align-items:center;gap:12px;margin-bottom:28px;"><span class="badge" style="background:#845EC2;color:#fff;padding:5px 14px;border-radius:999px;font-size:0.75rem;font-weight:700;">Tentang</span><h2>Tentang Saya</h2></div><div class="section-grid" style="display:grid;gap:24px;"><div class="about-card" style="background:#fff;border-radius:16px;padding:28px;box-shadow:0 1px 3px rgba(44,61,46,0.08);border-left:5px solid #845EC2;"><h3>' + esc(a.name) + '</h3><p>' + esc(a.bio) + '</p></div><div class="stats-row" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:22px 0;">' + stats + '</div></div></div></section>' +
-        '<section class="section" id="keterampilan" style="padding:56px 24px;"><div style="max-width:1100px;margin:0 auto;padding:0 24px;"><div class="section-head" style="display:flex;align-items:center;gap:12px;margin-bottom:28px;"><span class="badge" style="background:#845EC2;color:#fff;padding:5px 14px;border-radius:999px;font-size:0.75rem;font-weight:700;">Keterampilan</span><h2>Keterampilan</h2></div><div class="skills-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;">' + skills + '</div></div></section>' +
-        '<section class="section" id="proyek" style="padding:56px 24px;"><div style="max-width:1100px;margin:0 auto;padding:0 24px;"><div class="section-head" style="display:flex;align-items:center;gap:12px;margin-bottom:28px;"><span class="badge" style="background:#845EC2;color:#fff;padding:5px 14px;border-radius:999px;font-size:0.75rem;font-weight:700;">Proyek</span><h2>Proyek</h2></div><div class="section-grid" style="display:grid;gap:24px;">' + projects + '</div></div></section>' +
-        '<section class="section" id="pengalaman" style="padding:56px 24px;"><div style="max-width:1100px;margin:0 auto;padding:0 24px;"><div class="section-head" style="display:flex;align-items:center;gap:12px;margin-bottom:28px;"><span class="badge" style="background:#845EC2;color:#fff;padding:5px 14px;border-radius:999px;font-size:0.75rem;font-weight:700;">Pengalaman</span><h2>Pengalaman</h2></div><div class="section-grid" style="display:grid;gap:24px;">' + experiences + '</div></div></section>' +
-        '<section class="section section-alt" id="kontak" style="padding:56px 24px;"><div style="max-width:1100px;margin:0 auto;padding:0 24px;"><div class="section-head" style="display:flex;align-items:center;gap:12px;margin-bottom:28px;"><span class="badge" style="background:#845EC2;color:#fff;padding:5px 14px;border-radius:999px;font-size:0.75rem;font-weight:700;">Kontak</span><h2>Kontak</h2></div><div class="section-grid" style="display:grid;gap:24px;"><div class="section-grid" style="grid-template-columns:1fr 1fr;"><div class="contact-item" style="background:#fff;border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(44,61,46,0.08);text-align:center;"><div class="ic" style="font-size:1.6rem;">✉</div><div class="label" style="font-size:0.78rem;color:#8a8a8a;">Email</div><div class="val" style="font-size:0.95rem;font-weight:700;color:#2C3D2E;"><a href="mailto:' + esc(c.email) + '&quot;&gt;' + esc(c.email) + '</a></div></div><div class="contact-item" style="background:#fff;border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(44,61,46,0.08);text-align:center;"><div class="ic" style="font-size:1.6rem;">📱</div><div class="label" style="font-size:0.78rem;color:#8a8a8a;">Telepon</div><div class="val" style="font-size:0.95rem;font-weight:700;color:#2C3D2E;">' + (c.phone ? esc(c.phone) : '<span style="color:#8a8a8a;">Belum diatur</span>') + '</div></div></div><div class="contact-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;"><a class="contact-item" href="' + safe(u(c.github)) + '" style="text-decoration:none;"><div class="ic" style="font-size:1.6rem;">🐙</div><div class="label" style="font-size:0.78rem;color:#8a8a8a;">GitHub</div><div class="val" style="font-size:0.95rem;font-weight:700;color:#2C3D2E;">github.com</div></a><a class="contact-item" href="' + safe(u(c.linkedin)) + '" style="text-decoration:none;"><div class="ic" style="font-size:1.6rem;">💼</div><div class="label" style="font-size:0.78rem;color:#8a8a8a;">LinkedIn</div><div class="val" style="font-size:0.95rem;font-weight:700;color:#2C3D2E;">linkedin.com</div></a></div></div></section>' +
-        '<footer><div class="footer-inner" style="background:#2C3D2E;color:#fff;padding:32px 24px;border-top:4px solid #845EC2;"><span class="copyright" style="font-size:0.82rem;opacity:0.75;">© 2026 ' + esc(s.title) + '. All rights reserved.</span><span class="admin-link" style="font-size:0.82rem;color:#fff;opacity:0.7;">Admin: admin.html</span></div></footer>'
+        '&lt;header style="position:sticky;top:0;background:#fff;border-bottom:1px solid #e3e0da;"><div style="max-width:1100px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;"><a style="display:flex;align-items:center;gap:10px;font-size:1.3rem;font-weight:800;color:#2C3D2E;"><span style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#845EC2,#0081CF);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.05rem;">WP</span>Wisnu Pandu</a><nav><ul style="list-style:none;display:flex;gap:6px;">' +
+        '&lt;li><a style="padding:8px 14px;border-radius:8px;text-decoration:none;color:#5c5c5c;font-weight:600;" href="#tentang">Tentang</a></li>' +
+        '&lt;li><a style="padding:8px 14px;border-radius:8px;text-decoration:none;color:#5c5c5c;font-weight:600;" href="#keterampilan">Keterampilan</a></li>' +
+        '&lt;li><a style="padding:8px 14px;border-radius:8px;text-decoration:none;color:#5c5c5c;font-weight:600;" href="#proyek">Proyek</a></li>' +
+        '&lt;li><a style="padding:8px 14px;border-radius:8px;text-decoration:none;color:#5c5c5c;font-weight:600;" href="#pengalaman">Pengalaman</a></li>' +
+        '&lt;li><a style="padding:8px 14px;border-radius:8px;text-decoration:none;color:#5c5c5c;font-weight:600;" href="#kontak">Kontak</a></li>' +
+        '&lt;/ul&gt;</nav></div></header>' +
+        '&lt;section class="hero" style="padding:64px 24px 56px;text-align:center;background:linear-gradient(160deg,#2C3D2E 0%,#1F2E24 55%,#243028 100%);color:#fff;"><div style="max-width:1100px;margin:0 auto;padding:0 24px;">' +
+        '&lt;span class="hero-badge" style="display:inline-block;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.22);padding:6px 16px;border-radius:999px;font-size:0.8rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">Halo, Saya</span>' +
+        '&lt;div class="hero-avatar" style="width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,0.14);border:4px solid rgba(255,255,255,0.28);margin:0 auto 22px;display:flex;align-items:center;justify-content:center;font-size:2.6rem;font-weight:800;overflow:hidden;"><img src="' + imgF() + '" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>' +
+        '&lt;h1 style="color:#fff;font-size:2.4rem;font-weight:800;letter-spacing:-1px;">' + esc(s.title) + '&lt;/h1&gt;' +
+        '&lt;p class="subtitle" style="font-size:1.15rem;opacity:0.85;margin-bottom:14px;">' + esc(s.subtitle) + '&lt;/p&gt;' +
+        '&lt;p class="tagline" style="font-size:1rem;opacity:0.75;max-width:620px;margin:0 auto 26px;">' + esc(s.tagline) + '&lt;/p&gt;' +
+        '&lt;div class="hero-actions" style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;"><a class="btn btn-primary" style="background:#fff;color:#2C3D2E;">Pelajari</a><a class="btn btn-outline" style="background:transparent;color:#fff;border:2px solid rgba(255,255,255,0.35);">Proyek</a></div>' +
+        '&lt;/div&gt;</section>' +
+        '&lt;section class="section" id="tentang" style="padding:56px 24px;"><div style="max-width:1100px;margin:0 auto;padding:0 24px;"><div class="section-head" style="display:flex;align-items:center;gap:12px;margin-bottom:28px;"><span class="badge" style="background:#845EC2;color:#fff;padding:5px 14px;border-radius:999px;font-size:0.75rem;font-weight:700;">Tentang</span><h2>Tentang Saya</h2></div><div class="section-grid" style="display:grid;gap:24px;"><div class="about-card" style="background:#fff;border-radius:16px;padding:28px;box-shadow:0 1px 3px rgba(44,61,46,0.08);border-left:5px solid #845EC2;"><h3>' + esc(a.name) + '&lt;/h3&gt;<p>' + esc(a.bio) + '&lt;/p&gt;</div><div class="stats-row" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:22px 0;">' + stats + '&lt;/div&gt;</div></div></section>' +
+        '&lt;section class="section" id="keterampilan" style="padding:56px 24px;"><div style="max-width:1100px;margin:0 auto;padding:0 24px;"><div class="section-head" style="display:flex;align-items:center;gap:12px;margin-bottom:28px;"><span class="badge" style="background:#845EC2;color:#fff;padding:5px 14px;border-radius:999px;font-size:0.75rem;font-weight:700;">Keterampilan</span><h2>Keterampilan</h2></div><div class="skills-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;">' + skills + '&lt;/div&gt;</div></section>' +
+        '&lt;section class="section" id="proyek" style="padding:56px 24px;"><div style="max-width:1100px;margin:0 auto;padding:0 24px;"><div class="section-head" style="display:flex;align-items:center;gap:12px;margin-bottom:28px;"><span class="badge" style="background:#845EC2;color:#fff;padding:5px 14px;border-radius:999px;font-size:0.75rem;font-weight:700;">Proyek</span><h2>Proyek</h2></div><div class="section-grid" style="display:grid;gap:24px;">' + projects + '&lt;/div&gt;</div></section>' +
+        '&lt;section class="section" id="pengalaman" style="padding:56px 24px;"><div style="max-width:1100px;margin:0 auto;padding:0 24px;"><div class="section-head" style="display:flex;align-items:center;gap:12px;margin-bottom:28px;"><span class="badge" style="background:#845EC2;color:#fff;padding:5px 14px;border-radius:999px;font-size:0.75rem;font-weight:700;">Pengalaman</span><h2>Pengalaman</h2></div><div class="section-grid" style="display:grid;gap:24px;">' + experiences + '&lt;/div&gt;</div></section>' +
+        '&lt;section class="section section-alt" id="kontak" style="padding:56px 24px;"><div style="max-width:1100px;margin:0 auto;padding:0 24px;"><div class="section-head" style="display:flex;align-items:center;gap:12px;margin-bottom:28px;"><span class="badge" style="background:#845EC2;color:#fff;padding:5px 14px;border-radius:999px;font-size:0.75rem;font-weight:700;">Kontak</span><h2>Kontak</h2></div><div class="section-grid" style="display:grid;gap:24px;"><div class="section-grid" style="grid-template-columns:1fr 1fr;"><div class="contact-item" style="background:#fff;border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(44,61,46,0.08);text-align:center;"><div class="ic" style="font-size:1.6rem;">✉</div><div class="label" style="font-size:0.78rem;color:#8a8a8a;">Email</div><div class="val" style="font-size:0.95rem;font-weight:700;color:#2C3D2E;"><a href="mailto:' + esc(c.email) + '&quot;&gt;' + esc(c.email) + '&lt;/a&gt;</div></div><div class="contact-item" style="background:#fff;border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(44,61,46,0.08);text-align:center;"><div class="ic" style="font-size:1.6rem;">📱</div><div class="label" style="font-size:0.78rem;color:#8a8a8a;">Telepon</div><div class="val" style="font-size:0.95rem;font-weight:700;color:#2C3D2E;">' + (c.phone ? esc(c.phone) : '&lt;span style="color:#8a8a8a;">Belum diatur</span>') + '&lt;/div&gt;</div></div><div class="contact-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;"><a class="contact-item" href="' + safe(u(c.github)) + '" style="text-decoration:none;"><div class="ic" style="font-size:1.6rem;">🐙</div><div class="label" style="font-size:0.78rem;color:#8a8a8a;">GitHub</div><div class="val" style="font-size:0.95rem;font-weight:700;color:#2C3D2E;">github.com</div></a><a class="contact-item" href="' + safe(u(c.linkedin)) + '" style="text-decoration:none;"><div class="ic" style="font-size:1.6rem;">💼</div><div class="label" style="font-size:0.78rem;color:#8a8a8a;">LinkedIn</div><div class="val" style="font-size:0.95rem;font-weight:700;color:#2C3D2E;">linkedin.com</div></a></div></div></section>' +
+        '&lt;footer><div class="footer-inner" style="background:#2C3D2E;color:#fff;padding:32px 24px;border-top:4px solid #845EC2;"><span class="copyright" style="font-size:0.82rem;opacity:0.75;">© 2026 ' + esc(s.title) + '. All rights reserved.</span><span class="admin-link" style="font-size:0.82rem;color:#fff;opacity:0.7;">Admin: admin.html</span></div></footer>'
       );
     }
 
     function bar(p) {
       var pct = Math.max(0, Math.min(100, Number(p) || 0));
-      return '<div class="bar"><i style="width:' + pct + '%;"></i></div>';
+      return '&lt;div class="bar"><i style="width:' + pct + '%;"></i></div>';
     }
     function safe(u) { if (!u) return "#"; u = String(u).trim(); if (!u.startsWith("http://") && !u.startsWith("https://")) u = "https://" + u; return u; }
 
@@ -673,3 +1102,6 @@
     }
   })();
   
+</script>
+</body>
+</html>
