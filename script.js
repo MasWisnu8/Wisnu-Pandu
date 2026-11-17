@@ -61,11 +61,11 @@
 
   function hero() {
     return (
-      '<section class="hero"><div class="wrap">' +
+      '<section class="hero"><div class="hero-bg"></div><div class="wrap">' +
         '<span class="hero-badge">Halo, Saya</span>' +
         '<div class="hero-avatar"><img src="' + imgFallback() + '" alt=""></div>' +
         '<h1>' + escapeHtml(SITE.site.title || "Wisnu Pandu Hidayat") + '</h1>' +
-        '<p class="subtitle">' + escapeHtml(SITE.site.subtitle || "Front-End Developer") + '</p>' +
+        '<p class="sig">' + escapeHtml(SITE.site.subtitle || "Production Manager") + '</p>' +
         '<p class="tagline">' + escapeHtml(SITE.site.tagline || "Membangun pengalaman digital yang cepat, rapi, dan digunakan orang.") + '</p>' +
         '<div class="hero-actions">' +
           '<a class="btn btn-primary" href="#tentang">Pelajari Lebih Lanjut</a>' +
