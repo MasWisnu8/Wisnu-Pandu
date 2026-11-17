@@ -4,10 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin — Wisnu Pandu Hidayat</title>
+<link rel="stylesheet" href="wisnu_admin_bootstrap.min.css">
 <style>
+/* Overrides and important fixes */
 :root{
   --navy:#2C3D2E;
-  --navy-l:#1F2E24;
   --primary:#845EC2;
   --primary-d:#6E45A8;
   --blue:#0081CF;
@@ -24,107 +25,90 @@
   --radius:16px;
   --radius-sm:12px;
 }
-*{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
 body{font-family:'Segoe UI','Inter','Roboto',sans-serif;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased;}
-a{color:var(--primary);}
-.hidden{display:none !important;}
-button{font-family:inherit;cursor:pointer;}
-input,textarea,select{font-family:inherit;color:var(--text);}
-
 /* ===== Login ===== */
+.hidden{display:none !important;}
 .login-screen{
   position:fixed;inset:0;background:rgba(44,61,46,.75);display:flex;align-items:center;justify-content:center;z-index:500;
 }
 .login-card{
-  width:100%;max-width:380px;padding:32px 28px;background:#fff;border-radius:var(--radius);box-shadow:var(--shadow-lg);
+  width:100%;max-width:380px;padding:32px 28px;background:#fff;border-radius:12px;box-shadow:0 16px 48px rgba(44,61,46,.16);
 }
 .login-card h2{font-size:1.5rem;color:var(--navy);margin-bottom:6px;}
 .login-card p{color:var(--text-m);font-size:.92rem;margin-bottom:18px;}
 .login-card .field{margin-bottom:14px;}
 .login-card label{display:block;font-size:.82rem;font-weight:700;color:var(--text-m);margin-bottom:6px;}
-.login-card input{width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:1.1rem;background:#fff;}
+.login-card input{width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:8px;font-size:1.1rem;background:#fff;}
 .login-card input:focus{border-color:var(--primary);outline:none;}
 .login-card .hint{font-size:.8rem;color:var(--text-l);margin-top:10px;}
-.login-card .hint code{background:#eef2f7;padding:2px 8px;border-radius:6px;font-size:.85rem;}
 .login-actions{display:flex;gap:12px;margin-top:22px;}
-.login-actions .btn{flex:1;padding:14px;border:none;border-radius:var(--radius-sm);font-size:1.05rem;font-weight:800;}
+.login-actions .btn{flex:1;padding:14px;border:none;border-radius:8px;font-size:1.05rem;font-weight:800;}
 .login-actions .btn-ok{background:var(--primary);color:#fff;}
 .login-actions .btn-cancel{background:var(--navy);color:#fff;}
 .login-card .bottom{text-align:center;font-size:.78rem;color:var(--text-l);margin-top:18px;}
-
 /* ===== Admin ===== */
+.admin{display:flex;flex-direction:column;min-height:100vh;}
 .admin-header{
   background:var(--navy);color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
 }
 .admin-header h1{font-size:1.25rem;display:flex;align-items:center;gap:10px;}
 .admin-header .sub{font-size:.82rem;opacity:.85;}
 .top-right{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
-.top-right .btn-sm{padding:10px 16px;font-size:.92rem;border:none;border-radius:var(--radius-sm);}
+.top-right .btn-sm{padding:10px 16px;font-size:.92rem;border:none;border-radius:8px;}
 .top-right .btn-sm:hover{background:rgba(255,255,255,.12);}
 .switch{display:flex;align-items:center;gap:8px;font-size:.88rem;cursor:pointer;color:#fff;}
 .switch input{accent-color:var(--primary);}
-
-.layout{display:flex;gap:20px;padding:20px;flex:1;min-height:0;}
-.sidebar{flex:0 0 240px;display:flex;flex-direction:column;gap:8px;background:var(--navy);color:#fff;padding:14px;}
-.sidebar .nav-btn{
-  width:100%;padding:12px 14px;border:none;border-radius:var(--radius-sm);color:#fff;font-size:1rem;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:8px;
-}
-.sidebar .nav-btn:hover{background:rgba(255,255,255,.1);}
-.sidebar .nav-btn.active{background:var(--primary);color:#fff;}
-.sidebar .sep{height:1px;background:#444;margin:6px 0;}
-.sidebar .netbtn{padding:10px 12px;font-size:.85rem;}
-
-.editor{flex:1;min-width:0;display:flex;flex-direction:column;gap:14px;}
+/* Editor layout - uses Bootstrap row/col */
+.editor{display:flex;flex-direction:column;flex:1;min-width:0;}
 .editor-top{display:flex;justify-content:space-between;align-items:center;gap:12px;}
 .editor-top h2{font-size:1.1rem;color:var(--navy);}
 .preview-toggle{display:flex;align-items:center;gap:8px;}
-.preview-toggle select{padding:8px 10px;border-radius:var(--radius-sm);border:2px solid var(--border);font-size:.88rem;}
+.preview-toggle label{font-size:.85rem;color:var(--text-m);}
+.preview-toggle select{padding:8px 10px;border-radius:8px;border:2px solid var(--border);font-size:.88rem;background:#fff;}
 .editor-body{display:flex;gap:18px;flex:1;min-height:0;}
-
-.preview-pane{flex:0 0 380px;min-width:320px;height:100%;background:#fff;border:2px solid var(--border);border-radius:var(--radius-sm);overflow:auto;}
+.preview-pane{flex:0 0 380px;min-width:340px;height:100%;background:#fff;border:2px solid var(--border);border-radius:var(--radius-sm);overflow:auto;}
 .preview-pane iframe{display:block;width:100%;height:100%;border:none;}
-.form-pane{flex:1;min-width:300px;display:flex;flex-direction:column;gap:14px;overflow:auto;padding-bottom:40px;}
+.form-pane{display:flex;flex-direction:column;gap:14px;overflow:auto;padding-bottom:40px;flex:1;}
 .form-pane h3{font-size:1.05rem;color:var(--navy);margin-bottom:4px;}
 .form-pane .sub{font-size:.82rem;color:var(--text-l);margin-bottom:12px;}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
 .form-grid-full{grid-template-columns:1fr;}
 .form-group{margin-bottom:14px;}
 .form-group label{display:block;font-size:.85rem;font-weight:700;color:var(--text-m);margin-bottom:6px;}
 .form-group input,.form-group textarea,.form-group select{
-  width:100%;padding:11px 13px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:1rem;background:#fff;
+  width:100%;padding:11px 13px;border:2px solid var(--border);border-radius:8px;font-size:1rem;background:#fff;
 }
 .form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--primary);outline:none;}
 .form-group textarea{min-height:80px;resize:vertical;}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-row{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
 .form-hint{font-size:.76rem;color:var(--text-l);margin-top:4px;}
-.photo-pick{display:flex;align-items:center;gap:12px;flex-wrap:wrap;border:2px dashed var(--border);border-radius:var(--radius-sm);padding:14px;background:#fff;}
+.photo-pick{display:flex;align-items:center;gap:12px;flex-wrap:wrap;border:2px dashed var(--border);border-radius:8px;padding:14px;background:#fff;}
 .photo-pick input{position:absolute;inset:0;opacity:0;cursor:pointer;}
 .photo-pick .pp-text{font-size:.85rem;color:var(--text-m);}
 .photo-pick .pp-text b{color:var(--primary);}
 .list-editor{display:flex;flex-direction:column;gap:12px;max-height:320px;overflow-y:auto;padding-right:6px;}
-.list-editor .item{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:center;padding:14px;background:#fff;border:2px solid var(--border);border-radius:var(--radius-sm);}
+.list-editor .item{display:grid;grid-template-columns:repeat(4,1fr) auto;gap:10px;align-items:center;padding:14px;background:#fff;border:2px solid var(--border);border-radius:8px;}
 .list-editor .item .full{grid-column:1/-1;}
-.list-editor .item input,.list-editor .item input[type=text],.list-editor .item input[type=number],.list-editor .item input[type=date]{width:100%;padding:9px 10px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:.92rem;}
+.list-editor .item input,.list-editor .item input[type=text],.list-editor .item input[type=number],.list-editor .item input[type=date]{width:100%;padding:9px 10px;border:2px solid var(--border);border-radius:8px;font-size:.92rem;}
 .list-editor .item .del{
-  background:#fff;border:2px solid #fecaca;color:#b91c1c;padding:8px 12px;border-radius:var(--radius-sm);font-size:.8rem;font-weight:700;
+  background:#fff;border:2px solid #fecaca;color:#b91c1c;padding:8px 12px;border-radius:8px;font-size:.8rem;font-weight:700;
 }
 .list-editor .item .del:hover{background:#fee2e2;border-color:#fca5a5;color:#b91c1c;}
-.add-btn{
-  padding:12px 18px;background:var(--teal);color:#fff;border:none;border-radius:var(--radius-sm);font-size:1rem;font-weight:800;margin-top:8px;
-}
+.add-btn{padding:12px 18px;background:var(--teal);color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:800;margin-top:8px;}
 .add-btn:hover{background:#00706a;}
-.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.stat-row{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
 .focus-row{display:flex;gap:10px;align-items:center;margin-bottom:8px;}
 .focus-row input{flex:1;}
 .greet-banner{
-  background:#eef2f7;padding:12px 16px;border-radius:var(--radius-sm);font-size:.85rem;color:var(--text-m);display:none;
+  background:#eef2f7;padding:12px 16px;border-radius:8px;font-size:.85rem;color:var(--text-m);display:none;
 }
 .howto{font-size:.85rem;color:var(--text-m);line-height:1.6;display:none;}
 .howto b{color:var(--navy);}
 .toast-container{position:fixed;bottom:22px;right:22px;z-index:600;display:flex;flex-direction:column;gap:10px;}
 .toast{
-  background:var(--navy);color:#fff;padding:14px 20px;border-radius:var(--radius-sm);box-shadow:var(--shadow-lg);min-width:280px;max-width:360px;font-size:.92rem;
+  background:var(--navy);color:#fff;padding:14px 20px;border-radius:8px;box-shadow:0 16px 48px rgba(44,61,46,.16);
+  min-width:280px;max-width:360px;font-size:.92rem;
   animation:slideIn .3s ease;
 }
 .toast.error{background:#b91c1c;}
@@ -132,14 +116,13 @@ input,textarea,select{font-family:inherit;color:var(--text);}
 .toast .t2{font-size:.8rem;color:#fff;opacity:.9;margin-top:4px;}
 @keyframes slideIn{from{transform:translateX(40px);opacity:0;}to{transform:translateX(0);opacity:1;}}
 @media (max-width:820px){
-  .layout{flex-direction:column;}
+  .editor-body{flex-direction:column;}
   .preview-pane{flex:1;min-width:0;height:50vh;}
   .form-pane{height:50vh;}
   .form-grid,.stat-row,.list-editor .item{grid-template-columns:1fr;}
   .list-editor .item .del{grid-column:1/-1;margin-top:8px;}
-  .editor-body{flex-direction:column;}
 }
-</style>
+
 </head>
 <body>
 
@@ -164,12 +147,12 @@ input,textarea,select{font-family:inherit;color:var(--text);}
 <!-- ===== ADMIN WORKSPACE ===== -->
 <div class="admin" id="admin">
   <header class="admin-header">
-    <div>
+    <div class="container">
       <h1>🛠️ Admin Panel</h1>
-      <p class="sub">● Situs: <code>index.html</code> &nbsp;● Admin: <code>admin.html</code></p>
+      <p class="sub text-muted">● Situs: <code>index.html</code> &nbsp;● Admin: <code>admin.html</code></p>
     </div>
     <div class="top-right">
-      <button class="btn-sm" id="guestBtn">👀 Lihat Situs</button>
+      <button class="btn btn-sm" id="guestBtn">👀 Lihat Situs</button>
       <label class="switch">
         <input id="darkToggle" type="checkbox">
         <span class="lbl">🌙 Mode gelap</span>
@@ -177,47 +160,50 @@ input,textarea,select{font-family:inherit;color:var(--text);}
     </div>
   </header>
 
-  <div class="layout">
-    <aside class="sidebar">
-      <button class="nav-btn active" data-section="profile">👤 Profil & Umum</button>
-      <button class="nav-btn" data-section="about">📝 Tentang</button>
-      <button class="nav-btn" data-section="skills">🛠 Keterampilan</button>
-      <button class="nav-btn" data-section="projects">📦 Proyek</button>
-      <button class="nav-btn" data-section="experience">🕰 Pengalaman</button>
-      <button class="nav-btn" data-section="contact">✉ Kontak</button>
-      <button class="nav-btn" data-section="settings">⚙ Pengaturan & Simpan</button>
-      <div class="sep"></div>
-      <button class="nav-btn netbtn" id="saveDraftBtn">💾 Simpan Draft</button>
-      <button class="nav-btn netbtn" id="publishBtn">⬆ Upload ke Repo</button>
-    </aside>
-
-    <div class="editor">
-      <div class="editor-top">
-        <h2 id="editorTitle">Profil & Umum</h2>
-        <div class="preview-toggle">
-          <label>Preview:</label>
-          <select id="previewMode">
-            <option value="full">lihat draft (sekarang)</option>
-            <option value="iframe">lihat situs publik</option>
-            <option value="none">matikan</option>
-          </select>
-        </div>
+  <div class="container-fluid" style="padding:0 15px;">
+    <div class="row" style="min-height:calc(100vh - 63px);">
+      <div class="col-md-3 col-lg-2 sidebar">
+        <button class="nav-btn active" data-section="profile">👤 Profil & Umum</button>
+        <button class="nav-btn" data-section="about">📝 Tentang</button>
+        <button class="nav-btn" data-section="skills">🛠 Keterampilan</button>
+        <button class="nav-btn" data-section="projects">📦 Proyek</button>
+        <button class="nav-btn" data-section="experience">🕰 Pengalaman</button>
+        <button class="nav-btn" data-section="contact">✉ Kontak</button>
+        <button class="nav-btn" data-section="settings">⚙ Pengaturan & Simpan</button>
+        <div class="sep"></div>
+        <button class="nav-btn netbtn" id="saveDraftBtn">💾 Simpan Draft</button>
+        <button class="nav-btn netbtn" id="publishBtn">⬆ Upload ke Repo</button>
       </div>
-      <div class="editor-body">
-        <div class="preview-pane" id="previewPane"></div>
-        <div class="form-pane" id="formPane"></div>
+      <div class="col-md-9 col-lg-10 editor">
+        <div class="editor-top">
+          <h2 id="editorTitle">Profil & Umum</h2>
+          <div class="preview-toggle">
+            <label>Preview:</label>
+            <select id="previewMode" class="form-control">
+              <option value="full">lihat draft (sekarang)</option>
+              <option value="iframe">lihat situs publik</option>
+              <option value="none">matikan</option>
+            </select>
+          </div>
+        </div>
+        <div class="editor-body">
+          <div class="preview-pane" id="previewPane"></div>
+          <div class="form-pane" id="formPane"></div>
+        </div>
       </div>
     </div>
   </div>
-
   <div class="greet-banner" id="greetBanner">
-    ✔️ Betulan dulu, lalu klik <strong>Simpan Draft</strong>. Setelah yakin, klik <strong>Upload ke Repo</strong>.
+      ✔️ Betulan dulu, lalu klik <strong>Simpan Draft</strong>. Setelah yakin, klik <strong>Upload ke Repo</strong>.
+    </div>
+    <div class="howto" id="howto">
+      <b>Cara pakai:</b> 1) Pilih bagian di samping. 2) Isi form di tengah. 3) Klik <strong>Simpan Draft</strong>. 4) Klik <strong>Upload ke Repo</strong> kalau sudah selesai.
+    </div>
   </div>
-  <div class="howto" id="howto">
-    <b>Cara pakai:</b> 1) Pilih bagian di samping. 2) Isi form di tengah. 3) Klik <strong>Simpan Draft</strong>. 4) Klik <strong>Upload ke Repo</strong> kalau sudah selesai.
-  </div>
-</div>
 
+
+<script src="wisnu_admin_jquery.min.js"></script>
+<script src="wisnu_admin_bootstrap.min.js"></script>
 <div class="toast-container" id="toastContainer"></div>
 
 <script src="data.js"></script>
