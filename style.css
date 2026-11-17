@@ -393,6 +393,11 @@ nav a.active { color: var(--dark); font-weight: 700; }
 .exp-card .role { font-size: 1.18rem; font-weight: 800; color: var(--dark); }
 .exp-card .company { font-size: 0.95rem; color: var(--primary); font-weight: 700; margin-left: 8px; }
 .exp-card .period { font-size: 0.82rem; color: var(--text-light); margin-bottom: 12px; }
+.exp-summary { color: var(--text-mid); font-size: 0.95rem; line-height: 1.7; margin-bottom: 14px; }
+.exp-section-title { font-size: 0.85rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.exp-bullets { list-style: none; margin: 0; padding: 0; }
+.exp-bullets li { position: relative; padding: 5px 0 5px 22px; color: var(--text-mid); font-size: 0.88rem; line-height: 1.55; }
+.exp-bullets li::before { content: '▸'; position: absolute; left: 2px; top: 2px; color: var(--blue); font-weight: 800; }
 .exp-card ul { list-style: none; margin-top: 10px; }
 .exp-card ul li {
   position: relative;

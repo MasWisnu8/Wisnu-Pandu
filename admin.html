@@ -238,7 +238,7 @@ var $ = function(id){
 
 /* ================= UTIL ================= */
 function escapeHtml(s){
-  return String(s||"").replace(/[&<>"']/g, function(c){
+  return String(s||"").replace(/[&<>"'"]/g, function(c){
     return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
   });
 }
@@ -282,6 +282,7 @@ function doLogin(){
   if (pass === ADMIN_PASSWORD) {
     localStorage.setItem("admin_logged_in", "true");
     showAdmin();
+    showSection("profile");
     showToast("Masuk! Silakan edit konten.");
   } else {
     showToastError("Password salah. Coba lagi.");
@@ -291,434 +292,6 @@ $("#darkToggle").addEventListener("change", function(){
   document.body.classList.toggle("dark", this.checked);
   if (IS_LOGGED_IN) persist();
 });
-
-/* ================= DATA ACCESS ================= */
-function getVal(path){
-  var cur = SITE;
-  for (var i=0;i<path.length;i++){
-    if (!cur) return [];
-    cur = cur[path[i]];
-  }
-  return cur;
-}
-function setValue(path, val){
-  var cur = SITE;
-  for (var i=0;i<path.length-1;i++){
-    if (!cur) return;
-    cur = cur[path[i]];
-  }
-  if (!cur) return;
-  cur[path[path.length-1]] = val;
-  persist();
-  refreshPreview();
-}
-function persist(){
-  try { localStorage.setItem(DRAFT_KEY, JSON.stringify(SITE)); } catch(e){}
-}
-function loadDraft(){
-  try {
-    var raw = localStorage.getItem(DRAFT_KEY);
-    if (raw) {
-      var d = JSON.parse(raw);
-      for (var k in d){ if (d.hasOwnProperty(k) && SITE[k] !== undefined ) SITE[k] = d[k]; }
-    }
-  } catch(e){}
-}
-
-/* ================= NAVIGASI + FORM */
-var SECTIONS = {
-  profile:{title:"Profil & Umum", icon:"👤"},
-  about:{title:"Tentang", icon:"📝"},
-  skills:{title:"Keterampilan", icon:"🛠"},
-  projects:{title:"Proyek", icon:"📦"},
-  experience:{title:"Pengalaman", icon:"🕰"},
-  contact:{title:"Kontak", icon:"✉"},
-  settings:{title:"Pengaturan & Simpan", icon:"⚙"}
-};
-
-var STATE = { section: "profile" };
-
-function showSection(key){
-  STATE.section = key;
-  var p = SECTIONS[key];
-  $("#editorTitle").textContent = (p ? p.icon + " " : "") + p.title;
-  document.querySelectorAll(".sidebar .nav-btn").forEach(function(b){
-    b.classList.toggle("active", b.dataset.section === key);
-  });
-  renderForm();
-  refreshPreview();
-}
-
-function renderForm(){
-  var html = "";
-  if (STATE.section === "profile") html = profileForm();
-  else if (STATE.section === "about") html = aboutForm();
-  else if (STATE.section === "skills") html = skillsForm();
-  else if (STATE.section === "projects") html = projectsForm();
-  else if (STATE.section === "experience") html = experienceForm();
-  else if (STATE.section === "contact") html = contactForm();
-  else if (STATE.section === "settings") html = settingsForm();
-  $("#formPane").innerHTML = html;
-  bindInputs();
-}
-
-function profileForm(){
-  var s = SITE.site || {};
-  return (
-    '<div class="form-grid">' +
-      '<div class="form-group"><label>Judul Website (H1)</label><input id="f-site-title" data-path="site.title" value="' + escapeAttr(s.title) + '"></div>' +
-      '<div class="form-group"><label>Subjudul</label><input id="f-site-subtitle" data-path="site.subtitle" value="' + escapeAttr(s.subtitle) + '"></div>' +
-      '<div class="form-group"><label>Tagline</label><input id="f-site-tagline" data-path="site.tagline" value="' + escapeAttr(s.tagline) + '"></div>' +
-      '<div class="form-group"><label>Deskripsi singkat</label><input id="f-site-description" data-path="site.description" value="' + escapeAttr(s.description) + '"></div>' +
-    '</div>' +
-    '<div class="form-grid" style="margin-top:6px;">' +
-      '<div class="form-group"><label>Avatar (teks default)</label><input id="f-site-avatar" data-path="site.avatar" value="' + escapeAttr(s.avatar) + '" placeholder="Contoh: WP"></div>' +
-      '<div class="form-group"><label>Foto Profil (URL)</label><input id="f-site-photo" data-path="site.photo" value="' + escapeAttr(s.photo) + '" placeholder="https://..."></div>' +
-    '</div>' +
-    '<div class="form-group"><label>Upload Foto Profil (klik gambar)</label>' +
-      '<div class="photo-pick">' +
-        '<input type="file" id="f-site-photo-file" accept="image/*">' +
-        '<div class="pp-text">Klik untuk pilih gambar. Maksimal 1MB. <b>Belum ada foto.</b></div>' +
-      '</div>' +
-      '<input type="hidden" id="f-site-photo" data-path="site.photo" value="' + escapeAttr(s.photo) + '">' +
-    '</div>' +
-    '<div class="form-group">' +
-      '<label style="display:flex;align-items:center;gap:10px;font-weight:400;">' +
-        '<input id="f-site-isDark" type="checkbox" data-path="site.isDark"' + (s.isDark ? " checked" : "") + '> Aktifkan tema gelap (mode gelap)</label>' +
-    '</div>'
-  );
-}
-
-function aboutForm(){
-  var a = SITE.about || {};
-  var stats = (a.stats || []).map(function(st,i){ return (
-    '<div class="form-group"><label>Statistik ' + (i+1) + '</label>' +
-    '<div class="stat-row"><input data-path="about.stats.'+i+'.label" placeholder="Label" value="' + escapeAttr(st.label) + '">' +
-    '<input data-path="about.stats.'+i+'.value" placeholder="Nilai" value="' + escapeAttr(st.value) + '"></div></div>'
-  ); }).join("");
-  var focus = (a.focus || []).map(function(f,i){ return '<div class="focus-row"><input data-path="about.focus.'+i+'" placeholder="Fokus ' + (i+1) + '" value="' + escapeAttr(f) + '"></div>'; }).join("");
-  return (
-    '<div class="form-group"><label>Nama</label><input id="f-about-name" data-path="about.name" value="' + escapeAttr(a.name) + '"></div>' +
-    '<div class="form-group"><label>Jabatan</label><input id="f-about-title" data-path="about.title" value="' + escapeAttr(a.title) + '"></div>' +
-    '<div class="form-group"><label>Bio</label><textarea id="f-about-bio" data-path="about.bio" rows="5">' + escapeAttr(a.bio) + '</textarea></div>' +
-    '<div class="form-group"><label>Statistik (label & nilai)</label><div class="stat-row" id="statList">' + stats + '</div><p class="form-hint">Isi 2-4 baris.</p></div>' +
-    '<div class="form-group"><label>Fokus (hal yang diprioritaskan)</label><div id="focusList">' + focus + '</div><p class="form-hint">Input 1 tiap baris.</p></div>'
-  );
-}
-
-function skillsForm(){
-  var skills = SITE.skills || [];
-  var rows = skills.map(function(sk,i){
-    return '<div class="item"><input data-path="skills.'+i+'.name" value="' + escapeAttr(sk.name) + '" placeholder="Nama skill">' +
-      '<div class="pct"><label style="font-size:.82rem;color:var(--text-m);">%</label><input type="number" min="0" max="100" data-path="skills.'+i+'.level" value="' + (sk.level||0) + '"></div>' +
-      '<button class="del" data-del="skill" data-idx="'+i+'">✕</button></div>';
-  }).join("");
-  return (
-    '<div class="list-editor" id="skillList">' + rows + '</div>' +
-    '<button class="add-btn" id="addSkillBtn">+ Tambah keterampilan</button>'
-  );
-}
-
-function projectsForm(){
-  var projects = SITE.projects || [];
-  var rows = projects.map(function(p,i){
-    var photo = "";
-    if (p.photo) photo = '<div class="photo-pick" style="border-style:solid;"><input type="file" data-path="projects.'+i+'.photo" accept="image/*"><div class="pp-text"><b>Foto ada</b> — klik untuk ganti.</div></div>';
-    return '<div class="item">' +
-      '<div class="full"><label>Judul proyek</label><input data-path="projects.'+i+'.title" value="' + escapeAttr(p.title) + '" placeholder="Judul proyek"></div>' +
-      '<div class="full"><label>Tech (pisah spasi)</label><input data-path="projects.'+i+'.tech" value="' + escapeAttr((p.tech||[]).join(" ")) + '" placeholder="Tech"></div>' +
-      '<div class="full"><label>Link situs</label><input data-path="projects.'+i+'.link" value="' + escapeAttr(p.link) + '" placeholder="https://"></div>' +
-      '<div class="full"><label>Tanggal</label><input data-path="projects.'+i+'.date" type="date" value="' + escapeAttr(p.date||"") + '"></div>' +
-      '<div class="full" style="align-self:start;">' + photo + '</div>' +
-      '<button class="del" data-del="project" data-idx="'+i+'">✕</button>' +
-    '</div>';
-  }).join("");
-  return (
-    '<div class="list-editor" id="projectList">' + rows + '</div>' +
-    '<button class="add-btn" id="addProjectBtn">+ Tambah proyek</button>'
-  );
-}
-
-function experienceForm(){
-  var exps = SITE.experience || [];
-  var rows = exps.map(function(e,i){
-    return '<div class="item">' +
-      '<div class="full"><label>Posisi / Peran</label><input data-path="experience.'+i+'.role" value="' + escapeAttr(e.role) + '" placeholder="Posisi"></div>' +
-      '<div class="full"><label>Perusahaan</label><input data-path="experience.'+i+'.company" value="' + escapeAttr(e.company) + '" placeholder="Perusahaan"></div>' +
-      '<div class="full"><label>Periode</label><input data-path="experience.'+i+'.period" value="' + escapeAttr(e.period) + '" placeholder="Periode"></div>' +
-      '<button class="del" data-del="experience" data-idx="'+i+'">✕</button>' +
-    '</div>';
-  }).join("");
-  return (
-    '<div class="list-editor" id="expList">' + rows + '</div>' +
-    '<button class="add-btn" id="addExpBtn">+ Tambah pengalaman</button>'
-  );
-}
-
-function contactForm(){
-  var c = SITE.contact || {};
-  return (
-    '<div class="form-group"><label>Email</label><input data-path="contact.email" value="' + escapeAttr(c.email) + '"></div>' +
-    '<div class="form-group"><label>Telepon</label><input data-path="contact.phone" value="' + escapeAttr(c.phone) + '"></div>' +
-    '<div class="form-grid">' +
-      '<div class="form-group"><label>GitHub</label><input data-path="contact.github" value="' + escapeAttr(c.github) + '"></div>' +
-      '<div class="form-group"><label>LinkedIn</label><input data-path="contact.linkedin" value="' + escapeAttr(c.linkedin) + '"></div>' +
-    '</div>'
-  );
-}
-
-function settingsForm(){
-  var token = localStorage.getItem(GH_TOKEN_KEY) || "";
-  return (
-    '<div class="form-group"><label>GitHub Token (scope: repo / public_repo)</label><input id="ghToken" type="password" placeholder="ghp_..." value="'+escapeAttr(token)+'"><p class="form-hint">Klik <strong>Simpan token</strong> lalu <strong>Upload ke Repo</strong>.</p></div>' +
-    '<div class="form-group"><label>Username repo</label><input id="ghOwner" value="MasWisnu8" placeholder="Username (misal MasWisnu8)"></div>' +
-    '<div class="form-group"><label>Nama repo</label><input id="ghRepo" value="Wisnu-Pandu"></div>' +
-    '<div class="form-group"><label>Branch</label><input id="ghBranch" value="main"></div>' +
-    '<div class="form-group">' +
-      '<button class="btn btn-ok" id="saveGHToken">Simpan token</button>' +
-      '<button class="btn" id="clearGHToken">Hapus token</button>' +
-    '</div>' +
-    '<div class="form-group">' +
-      '<button class="btn btn-ok" id="pushDataBtn">⬆ Upload data.js ke repo</button>' +
-      '<p class="form-hint">Token disimpan di browser Anda. Hanya Anda yang bisa upload.</p>' +
-    '</div>'
-  );
-}
-
-/* ================= BIND INPUTS ================= */
-function bindInputs(){
-  var pane = $("#formPane");
-  var inputs = pane.querySelectorAll("input, textarea, select");
-  var pathMap = {
-    'f-site-title':'site.title','f-site-subtitle':'site.subtitle','f-site-tagline':'site.tagline',
-    'f-site-description':'site.description','f-site-avatar':'site.avatar','f-site-photo':'site.photo',
-    'f-site-isDark':'site.isDark','f-about-name':'about.name','f-about-title':'about.title',
-    'f-about-bio':'about.bio','f-contact-email':'contact.email','f-contact-phone':'contact.phone',
-    'f-contact-github':'contact.github','f-contact-linkedin':'contact.linkedin'
-  };
-  inputs.forEach(function(el){
-    var path = el.dataset && el.dataset.path;
-    if (!path) {
-      path = pathMap[el.id];
-    }
-    if (!path) return;
-    if (el.type === "file") return;
-    el.addEventListener("input", function(){
-      var val = el.value;
-      if (path.indexOf('.tech') > 0 && path.lastIndexOf('.') > 0) {
-        // tech array handling
-        var techPath = path;
-        val = String(val).split(/\s+/).filter(Boolean);
-      }
-      setValue(path, val);
-    });
-  });
-  // checkbox dark mode
-  var darkCheck = $("#f-site-isDark");
-  if (darkCheck) {
-    darkCheck.addEventListener("change", function(){
-      setValue(darkCheck.dataset.path, darkCheck.checked);
-    });
-  }
-  // file uploads
-  pane.querySelectorAll("input[type=file]").forEach(function(fi){
-    fi.addEventListener("change", function(){
-      var file = fi.files[0];
-      if (!file) return;
-      if (file.size > 1024*1024){ toast("Gambar terlalu besar (maks 1MB). Pilih yang lebih kecil."); return; }
-      var reader = new FileReader();
-      reader.onload = function(e){
-        var path = fi.dataset.path;
-        if (path) setValue(path, e.target.result);
-        refreshPreview();
-        toast("Foto dipilih.");
-      };
-      reader.readAsDataURL(file);
-    });
-  });
-  // tombol hapus
-  pane.querySelectorAll(".del").forEach(function(btn){
-    btn.addEventListener("click", function(){
-      var type = btn.dataset.del, idx = parseInt(btn.dataset.idx,10);
-      if (type === "skill"){ getVal(["skills"]).splice(idx,1); }
-      else if (type === "project"){ getVal(["projects"]).splice(idx,1); }
-      else if (type === "experience"){ getVal(["experience"]).splice(idx,1); }
-      persist(); renderForm(); refreshPreview();
-    });
-  });
-  // tambah
-  $("#addSkillBtn") && $("#addSkillBtn").addEventListener("click", function(){
-    getVal(["skills"]).push({name:"", level:60}); persist(); renderForm(); refreshPreview();
-  });
-  $("#addProjectBtn") && $("#addProjectBtn").addEventListener("click", function(){
-    getVal(["projects"]).push({title:"", tech:[], link:"", date:""}); persist(); renderForm(); refreshPreview();
-  });
-  $("#addExpBtn") && $("#addExpBtn").addEventListener("click", function(){
-    getVal(["experience"]).push({role:"", company:"", period:""}); persist(); renderForm(); refreshPreview();
-  });
-  // settings controls
-  if (STATE.section === "settings") {
-    $("#saveGHToken") && $("#saveGHToken").addEventListener("click", function(){
-      var t = $("#ghToken").value.trim();
-      if (!t){ toast("Token kosong. Masukkan token GitHub."); return; }
-      try { localStorage.setItem(GH_TOKEN_KEY, t); } catch(e){}
-      toast("Token disimpan. Bisa dipakai untuk upload.");
-    });
-    $("#clearGHToken") && $("#clearGHToken").addEventListener("click", function(){
-      try { localStorage.removeItem(GH_TOKEN_KEY); } catch(e){}
-      $("#ghToken").value = "";
-      toast("Token dihapus.");
-    });
-  }
-  $("#saveDraftBtn") && $("#saveDraftBtn").addEventListener("click", function(){
-    persist();
-    toast("Draft disimpan. Klik <strong>Upload ke Repo</strong> kalau sudah selesai.");
-  });
-  $("#pushDataBtn") && $("#pushDataBtn").addEventListener("click", function(){
-    var token = $("#ghToken").value.trim();
-    if (!token){ toast("Token belum diisi. Isi token di Pengaturan dulu."); return; }
-    pushToGitHub(token, function(ok, msg){
-      if (ok) toast("Upload berhasil!", msg, "success");
-      else toast("Gagal: " + msg, "", "error");
-    });
-  });
-  $("#guestBtn") && $("#guestBtn").addEventListener("click", function(){
-    window.open(location.origin + "/" + (location.pathname.split("/").pop() === "index.html" ? "" : ""), "_blank");
-  });
-}
-
-/* ================= PREVIEW ================= */
-function refreshPreview(){
-  var mode = $("#previewMode") ? $("#previewMode").value : "full";
-  if (mode === "iframe"){
-    $("#previewPane").innerHTML = '<iframe src="index.html" title="Preview"></iframe>';
-  } else if (mode === "full"){
-    renderPreviewFull();
-  } else {
-    $("#previewPane").innerHTML = "";
-  }
-}
-function renderPreviewFull(){
-  var preview = $("#previewPane");
-  preview.innerHTML = guestHTML();
-  var style = preview.ownerDocument.createElement("style");
-  style.textContent = guestCSS();
-  preview.insertBefore(style, preview.firstChild);
-}
-function guestCSS(){
-  return (
-    "body{background:#f6f4f0;color:#24302a;font-family:'Segoe UI',sans-serif;line-height:1.7;}" +
-    "h1,h2{font-weight:800;line-height:1.2;}" +
-    "header{background:#fff;border-bottom:1px solid #e3e1d9;height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;}" +
-    "nav ul{display:flex;gap:6px;list-style:none;}" +
-    "nav a{padding:8px 12px;text-decoration:none;color:#5c5c5c;font-weight:600;border-radius:8px;}" +
-    ".hero{background:linear-gradient(160deg,#2C3D2E 0%,#1F2E24 55%,#243028);color:#fff;}" +
-    ".hero h1{color:#fff;}" +
-    ".hero-avatar{display:flex;align-items:center;justify-content:center;width:110px;height:110px;border-radius:50%;border:4px solid rgba(255,255,255,.28);overflow:hidden;font-size:2.6rem;}" +
-    ".hero-avatar img{width:100%;height:100%;object-fit:cover;}" +
-    ".hero-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}" +
-    ".btn{background:#fff;color:#2C3D2E;border:none;padding:10px 20px;border-radius:8px;font-weight:700;}" +
-    ".btn-outline{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.35);}" +
-    ".section{padding:56px 24px;}" +
-    ".section-head{display:flex;align-items:center;gap:12px;margin-bottom:28px;}" +
-    ".badge{background:#845EC2;color:#fff;padding:5px 14px;border-radius:999px;font-size:.75rem;font-weight:700;}" +
-    ".about-card{background:#fff;border-left:5px solid #845EC2;border-radius:16px;padding:28px;box-shadow:0 1px 3px rgba(44,61,46,.08);}" +
-    ".stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:22px 0;}" +
-    ".stat{background:#f6f4f0;border-radius:12px;padding:16px;text-align:center;}" +
-    ".stat-number{font-size:1.6rem;font-weight:800;}" +
-    ".skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;}" +
-    ".skill{background:#fff;border-radius:12px;padding:14px;box-shadow:0 1px 3px rgba(44,61,46,.06);border-left:4px solid #0089BA;}" +
-    ".project-card{background:#fff;border-radius:16px;padding:22px;box-shadow:0 1px 3px rgba(44,61,46,.06);display:flex;gap:18px;align-items:flex-start;}" +
-    ".project-card .title{font-size:1.1rem;font-weight:800;color:#2C3D2E;}" +
-    ".project-card .tech{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;}" +
-    ".project-card .tech span{background:#eef2f7;padding:3px 10px;border-radius:999px;font-size:.72rem;font-weight:700;color:#5c5c5c;}" +
-    ".project-card p{color:#5c5c5c;font-size:.93rem;}" +
-    ".exp-card{background:#fff;border-radius:16px;padding:22px;box-shadow:0 1px 3px rgba(44,61,46,.06);border-bottom:1px solid #e4e1d9;}" +
-    ".exp-card .role{font-size:1.18rem;font-weight:800;color:#2C3D2E;}" +
-    ".exp-card .company{font-size:.95rem;color:#845EC2;font-weight:700;}" +
-    ".contact-item{background:#fff;border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(44,61,46,.06);text-align:center;}" +
-    ".contact-item .ic{font-size:1.6rem;}" +
-    ".contact-item .val{font-size:.95rem;font-weight:700;color:#2C3D2E;}" +
-    ".footer{background:#2C3D2E;color:#fff;padding:32px 24px;border-top:4px solid #845EC2;}" +
-    ".footer .copyright{font-size:.82rem;opacity:.75;}"
-  );
-}
-function guestHTML(){
-  var s = SITE.site || {}, a = SITE.about || {}, sc = SITE.skills || [], pj = SITE.projects || [], exp = SITE.experience || [], c = SITE.contact || {};
-  function imgF(){
-    var ph = s.photo; if (ph) return ph;
-    return 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="#845EC2" width="100" height="100" rx="50"/><text x="50" y="58" font-size="54" font-family="Segoe UI,sans-serif" font-weight="800" fill="#fff" text-anchor="middle">' + escapeAttr(s.avatar||"U") + '</text></svg>');
-  }
-  var stats = (a.stats || []).map(function(st){ return '<div class="stat"><div class="stat-number">'+escapeAttr(st.value)+'</div><div class="stat-label">'+escapeAttr(st.label)+'</div></div>'; }).join("");
-  var skills = sc.map(function(sk){ return '<div class="skill"><div class="name">'+escapeAttr(sk.name)+'</div><div class="level">'+((sk.level||0))+'%</div></div>'; }).join("");
-  var projects = pj.map(function(p,i){ return '<div class="project-card"><div class="title">'+escapeAttr(p.title)+'</div><div class="tech">' + (p.tech||[]).map(function(t){ return '<span>'+escapeAttr(t)+'</span>'; }).join("") + '</div><p style="color:#5c5c5c;">'+escapeAttr(p.description||"")+'</p><div class="hero-actions" style="margin-top:14px;"><a class="btn" href="'+escapeAttr(p.link||"#")+'" target="_blank" rel="noopener">Lihat</a><a class="btn btn-outline" href="'+escapeAttr(p.repo||"#")+'" target="_blank" rel="noopener">Kode</a></div></div>'; }).join("");
-  var experiences = exp.map(function(e){ return '<div class="exp-card"><div class="role">'+escapeAttr(e.role)+'</div><div class="company">'+escapeAttr(e.company)+'</div><div class="period">'+escapeAttr(e.period)+'</div></div>'; }).join("");
-  var contactHtml = '<div class="contact-item"><div class="ic">✉</div><div class="label">Email</div><div class="val"><a href="mailto:'+escapeAttr(c.email||"")+'">'+escapeAttr(c.email||"")+'</a></div></div>';
-  if (c.phone) contactHtml += '<div class="contact-item"><div class="ic">📱</div><div class="label">Telepon</div><div class="val">'+escapeAttr(c.phone)+'</div></div>';
-  contactHtml += '<div class="contact-item"><div class="ic">🐙</div><div class="label">GitHub</div><div class="val"><a href="'+escapeAttr(c.github||"#")+'" target="_blank" rel="noopener">github.com</a></div></div>';
-  contactHtml += '<div class="contact-item"><div class="ic">💼</div><div class="label">LinkedIn</div><div class="val"><a href="'+escapeAttr(c.linkedin||"#")+'" target="_blank" rel="noopener">linkedin.com</a></div></div>';
-  return (
-    '<header style="position:sticky;top:0;background:#fff;border-bottom:1px solid #e3e1d9;"><div style="max-width:1100px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;"><a style="display:flex;align-items:center;gap:10px;font-size:1.2rem;font-weight:800;color:#2C3D2E;"><span style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#845EC2,#0081CF);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.05rem;">WP</span>Wisnu Pandu</a><nav><ul style="list-style:none;display:flex;gap:6px;">'+
-    '<li><a style="padding:8px 12px;border-radius:8px;text-decoration:none;color:#5c5c5c;font-weight:600;" href="#tentang">Tentang</a></li>'+
-    '<li><a style="padding:8px 12px;border-radius:8px;text-decoration:none;color:#5c5c5c;font-weight:600;" href="#keterampilan">Keterampilan</a></li>'+
-    '<li><a style="padding:8px 12px;border-radius:8px;text-decoration:none;color:#5c5c5c;font-weight:600;" href="#proyek">Proyek</a></li>'+
-    '<li><a style="padding:8px 12px;border-radius:8px;text-decoration:none;color:#5c5c5c;font-weight:600;" href="#pengalaman">Pengalaman</a></li>'+
-    '<li><a style="padding:8px 12px;border-radius:8px;text-decoration:none;color:#5c5c5c;font-weight:600;" href="#kontak">Kontak</a></li>'+
-    '</ul></nav></div></header>'+
-    '<section class="hero"><div style="max-width:1100px;margin:0 auto;padding:0 24px;">'+
-    '<span style="display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);padding:6px 16px;border-radius:999px;font-size:.8rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#fff;margin-bottom:20px;">Halo, Saya</span>'+
-    '<div class="hero-avatar" style="width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.14);border:4px solid rgba(255,255,255,.28);margin:0 auto 22px;display:flex;align-items:center;justify-content:center;font-size:2.6rem;font-weight:800;overflow:hidden;"><img src="'+imgF()+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>'+
-    '<h1 style="color:#fff;font-size:2.4rem;font-weight:800;letter-spacing:-1px;">'+escapeAttr(s.title)+'</h1>'+
-    '<p style="font-size:1.1rem;opacity:.9;margin-bottom:12px;">'+escapeAttr(s.subtitle)+'</p>'+
-    '<p style="font-size:1rem;opacity:.8;max-width:620px;margin:0 auto 26px;">'+escapeAttr(s.tagline)+'</p>'+
-    '<div class="hero-actions" style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;"><a class="btn" style="background:#fff;color:#2C3D2E;" href="#tentang">Pelajari</a><a class="btn btn-outline" style="background:transparent;color:#fff;border:2px solid rgba(255,255,255,.35);" href="#proyek">Proyek</a></div>'+
-    '</div></section>'+
-    '<section class="section" id="tentang"><div style="max-width:1100px;margin:0 auto;padding:0 24px;"><div class="section-head" style="display:flex;align-items:center;gap:12px;margin-bottom:28px;"><span class="badge">Tentang</span><h2>Tentang Saya</h2></div><div style="display:grid;grid-template-columns:1fr 1.2fr;gap:30px;"><div class="about-card"><h3 style="font-size:1.3rem;font-weight:800;color:#2C3D2E;margin-bottom:12px;">'+escapeAttr(a.name)+'</h3><p style="color:#5c5c5c;">'+escapeAttr(a.bio||"")+'</p>'+stats+'</div></div></section>'+
-    '<section class="section" id="keterampilan"><div style="max-width:1100px;margin:0 auto;padding:0 24px;"><div class="section-head" style="display:flex;align-items:center;gap:12px;margin-bottom:28px;"><span class="badge">Keterampilan</span><h2>Keterampilan</h2></div><div class="skills-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;">'+skills+'</div></div></section>'+
-    '<section class="section" id="proyek"><div style="max-width:1100px;margin:0 auto;padding:0 24px;"><div class="section-head" style="display:flex;align-items:center;gap:12px;margin-bottom:28px;"><span class="badge">Proyek</span><h2>Proyek</h2></div><div style="display:grid;gap:22px;">'+projects+'</div></div></section>'+
-    '<section class="section" id="pengalaman"><div style="max-width:1100px;margin:0 auto;padding:0 24px;"><div class="section-head" style="display:flex;align-items:center;gap:12px;margin-bottom:28px;"><span class="badge">Pengalaman</span><h2>Pengalaman</h2></div><div style="display:grid;gap:22px;">'+experiences+'</div></div></section>'+
-    '<section class="section" id="kontak"><div style="max-width:1100px;margin:0 auto;padding:0 24px;"><div class="section-head" style="display:flex;align-items:center;gap:12px;margin-bottom:28px;"><span class="badge">Kontak</span><h2>Kontak</h2></div><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:20px;">'+contactHtml+'</div></div></section>'+
-    '<footer style="background:#2C3D2E;color:#fff;padding:32px 24px;border-top:4px solid #845EC2;"><div style="max-width:1100px;margin:0 auto;padding:0 24px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;"><span class="copyright">© 2026 '+escapeAttr(s.title)+'. All rights reserved.</span><span style="font-size:.82rem;opacity:.7;">Admin: admin.html</span></div></footer>'
-  );
-}
-
-/* ================= UPLOAD KE REPO ================= */
-function pushToGitHub(token, cb){
-  var owner = $("#ghOwner").value.trim() || "MasWisnu8";
-  var repo = $("#ghRepo").value.trim() || "Wisnu-Pandu";
-  var branch = $("#ghBranch").value.trim() || "main";
-  var url = "https://api.github.com/repos/" + encodeURIComponent(owner) + "/" + encodeURIComponent(repo) + "/contents/data.js?ref=" + encodeURIComponent(branch);
-  var data = {
-    message: "Update data dari admin panel",
-    content: btoa(unescape(encodeURIComponent(JSON.stringify(SITE, null, 2)))),
-    branch: branch
-  };
-  fetch(url, {
-    method: "PUT",
-    headers: {
-      "Authorization": "token " + token,
-      "User-Agent": "wisnu-admin-panel",
-      "Accept": "application/vnd.github+json"
-    },
-    body: JSON.stringify(data)
-  }).then(function(r){
-    if (r.ok) return r.json().then(function(j){ return {ok:true, msg:"Commit dibuat: "+j.commit.url}; });
-    if (r.status === 404) return Promise.reject("Repo tidak ditemukan. Cek owner/repo atau private repo.");
-    if (r.status === 401 || r.status === 403) return Promise.reject("Token tidak sah / dibatasi. Cek token.");
-    return Promise.reject("GitHub menolak (HTTP " + r.status + ").");
-  }).then(function(res){ cb(true, res.msg); }).catch(function(err){ cb(false, String(err)); });
-}
-
-/* ================= INISIALISASI ================= */
-$("#loginBtn").addEventListener("click", doLogin);
-$("#loginPassword").addEventListener("keydown", function(e){
-  if (e.key === "Enter") doLogin();
-});
-loadDraft();
-showSection("profile");
-window.STATE = window.STATE || STATE;
-window.SECTIONS = window.SECTIONS || SECTIONS;
-window.SITE = window.SITE || SITE;
 
 /* ================= DATA ACCESS ================= */
 function getVal(path){
@@ -791,7 +364,25 @@ function renderForm(){
 }
 
 /* ---------- PROFIL & UMUM ---------- */
-
+function profileForm(){
+  var s = SITE.site || {};
+  return (
+    '<div class="form-grid">' +
+      '<div class="form-group"><label>Judul Website (H1)</label><input id="f-site-title" data-path="site.title" value="' + escapeAttr(s.title) + '"></div>' +
+      '<div class="form-group"><label>Subjudul</label><input id="f-site-subtitle" data-path="site.subtitle" value="' + escapeAttr(s.subtitle) + '"></div>' +
+      '<div class="form-group"><label>Tagline</label><input id="f-site-tagline" data-path="site.tagline" value="' + escapeAttr(s.tagline) + '"></div>' +
+      '<div class="form-group"><label>Deskripsi singkat</label><input id="f-site-description" data-path="site.description" value="' + escapeAttr(s.description) + '"></div>' +
+    '</div>' +
+    '<div class="form-grid">' +
+      '<div class="form-group"><label>Avatar (teks default)</label><input id="f-site-avatar" data-path="site.avatar" value="' + escapeAttr(s.avatar) + '" placeholder="Contoh: WP"></div>' +
+      '<div class="form-group"><label>Foto Profil (URL)</label><input id="f-site-photo" data-path="site.photo" value="' + escapeAttr(s.photo) + '" placeholder="https://..."></div>' +
+    '</div>' +
+    '<div class="form-group">' +
+      '<label style="display:flex;align-items:center;gap:10px;font-weight:400;">' +
+        '<input id="f-site-isDark" type="checkbox" data-path="site.isDark"' + (s.isDark ? " checked" : "") + '> Aktifkan tema gelap (mode gelap)</label>' +
+    '</div>'
+  );
+}
 
 /* ---------- TENTANG ---------- */
 function aboutForm(){
@@ -1106,12 +697,8 @@ function pushToGitHub(token, cb){
 }
 
 /* ================= INISIALISASI ================= */
-$("#loginBtn").addEventListener("click", doLogin);
-$("#loginPassword").addEventListener("keydown", function(e){
-  if (e.key === "Enter") doLogin();
-});
 loadDraft();
-showSection("profile");
+checkLogin();
 
 window.STATE = window.STATE || STATE;
 window.SECTIONS = window.SECTIONS || SECTIONS;

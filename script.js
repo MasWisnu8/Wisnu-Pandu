@@ -191,20 +191,35 @@
       return '<section class="section" id="pengalaman"><div class="wrap"><div class="section-head"><span class="badge">Pengalaman</span><h2>Pengalaman</h2><p style="color:#8a8a8a;">Belum ada pengalaman.</p></div></section>';
     }
     var cards = exps.map(function (e, i) {
-      return (
-        '<div class="exp-card">' +
+      var expHtml = '<div class="exp-card">' +
+        '<div class="header">' +
           '<div class="role">' + escapeHtml(e.role || "") + '</div>' +
           '<div class="company">' + escapeHtml(e.company || "") + '</div>' +
           '<div class="period">' + escapeHtml(e.period || "") + '</div>' +
-          '<p>' + escapeHtml(e.description || "") + '</p>' +
-        '</div>'
-      );
+        '</div>' +
+        '<p class="exp-summary">' + escapeHtml(e.summary || "") + '</p>';
+      if (e.sections && e.sections.length) {
+        e.sections.forEach(function(section, idx) {
+          expHtml += '<div class="exp-section">';
+          expHtml += '<div class="exp-section-title">' + (idx + 1) + '. ' + escapeHtml(section.title || "") + '</div>';
+          if (section.items && section.items.length) {
+            expHtml += '<ul class="exp-bullets">';
+            section.items.forEach(function(item) {
+              expHtml += '<li>' + escapeHtml(item || "") + '</li>';
+            });
+            expHtml += '</ul>';
+          }
+          expHtml += '</div>';
+        });
+      }
+      expHtml += '</div>';
+      return expHtml;
     }).join("");
 
     return (
       '<section class="section" id="pengalaman"><div class="wrap">' +
         '<div class="section-head"><span class="badge">Pengalaman</span><h2>Pengalaman</h2></div>' +
-        '<div class="section-grid">' + cards + '</div>' +
+        '<div class="experience-grid">' + cards + '</div>' +
       '</div></section>'
     );
   }
