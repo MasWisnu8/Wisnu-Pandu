@@ -43,7 +43,7 @@ body{
 /* ================= LOGIN OVERLAY ================= */
 .login-overlay{
   position:fixed;inset:0;z-index:100;
-  background:url('images/dashboard.jpg') center/cover no-repeat,rgba(10,31,58,.65);
+  background:var(--primary);
   display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;
 }
 .login-logo{display:flex;flex-direction:column;align-items:center;gap:16px}
@@ -90,8 +90,7 @@ body{
 /* LAYOUT */
 .layout{
   display:flex;flex:1;min-height:0;overflow:hidden;
-  background:url('images/dashboard.jpg') center/cover no-repeat,rgba(10,31,58,.4);
-  background-blend-mode:overlay, normal;
+  background:var(--bg);
 }
 .sidebar{
   flex:0 0 240px;flex-shrink:0;
@@ -109,8 +108,7 @@ body{
 .hero{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:36px 32px;display:flex;align-items:center;gap:48px;max-width:1100px;margin:0 auto 32px;box-shadow:var(--shadow-lg);position:relative;overflow:hidden}
 .welcome-hero::before{
   content:'';position:absolute;inset:0;
-  background:url('images/dashboard.jpg') center/cover no-repeat,radial-gradient(circle,rgba(10,31,58,.35),transparent 70%);
-  opacity:.6;
+  background:var(--bg);
 }
 .welcome-hero::before,.welcome-hero .text-col{flex:1;min-width:300px}
 .welcome-hero .text-col{flex:1;min-width:300px}
