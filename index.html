@@ -3,626 +3,189 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin — Wisnu Pandu</title>
-<meta name="description" content="Dashboard admin Wisnu Pandu — edit profil, keterampilan, proyek, pengalaman, kontak.">
+<title>Wisnu Pandu Hidayat — Portfolio</title>
+<meta name="description" content="Portfolio Wisnu Pandu Hidayat — Production Manager & Operational Excellence">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&family=Brush+Script+Std&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg: #faf8f3;
-  --bg-panel: #ffffff;
-  --bg-soft: #f5f1e8;
   --primary: #0a1f3a;
   --primary-2: #1e3a5f;
-  --primary-soft: #eaf0f7;
+  --accent: #b89b6a;
   --text: #1a1a1a;
   --text-mid: #5a5a5a;
   --text-light: #8a8a8a;
-  --text-faint: #a8a8a8;
   --border: #e3ddd3;
-  --accent: #b89b6a;
-  --shadow: 0 2px 8px rgba(10,31,58,.06);
-  --shadow-lg: 0 12px 40px rgba(10,31,58,.10);
-  --radius: 20px;
-  --radius-lg: 32px;
-  --radius-full: 9999px;
-  --radius-sm: 14px;
-  --font-sans: 'Inter','Segoe UI','Roboto','Helvetica Neue',sans-serif;
-  --font-display: 'Playfair Display','Georgia','Times New Roman',serif;
-  --font-hand: 'Brush Script Std','Segoe Script','Lucida Handwriting',cursive;
+  --font-sans: 'Inter','Segoe UI','Roboto',sans-serif;
+  --font-display: 'Playfair Display','Georgia',serif;
+  --font-hand: 'Brush Script Std','Segoe Script',cursive;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
 body{
   font-family:var(--font-sans);background:var(--bg);color:var(--text);
   line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
 }
-.hidden{display:none !important}
-
-/* ================= LOGIN OVERLAY ================= */
-.login-overlay{
-  position:fixed;inset:0;z-index:100;
+.nav-wrap{max-width:1100px;margin:0 auto;padding:32px 24px}
+.nav{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+.nav a{
+  padding:10px 18px;text-decoration:none;color:var(--text-mid);
+  font-family:var(--font-sans);font-size:.95rem;font-weight:600;
+  border-radius:999px;transition:all .2s;
+}
+.nav a:hover{color:var(--primary);background:rgba(10,31,58,.05)}
+.hero{
+  max-width:1100px;margin:0 auto;padding:64px 24px;
+  display:flex;align-items:center;gap:48px;flex-wrap:wrap;position:relative;overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;
   background:radial-gradient(1200px 600px at 80% 20%,#0a1f3a10, #0a1f3a40),radial-gradient(800px 500px at 10% 90%,#0a1f3a0a, #0a1f3a10),var(--bg);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;
 }
-.login-logo{display:flex;flex-direction:column;align-items:center;gap:16px}
-.login-logo .logo-icon{width:84px;height:84px;border-radius:50%;background:linear-gradient(145deg,#0a1f3a,#1e3a5f);color:#fff;display:flex;align-items:center;justify-content:center;font-size:2.2rem;font-weight:900;box-shadow:0 8px 24px rgba(10,31,58,.25)}
-.login-logo .logo-text{font-family:var(--font-display);font-size:1.6rem;font-weight:900;letter-spacing:2px;color:var(--primary)}
-.login-logo .sub{font-size:.9rem;color:var(--text-mid);font-family:var(--font-hand);font-style:italic;letter-spacing:1px}
-.login-form{max-width:420px;width:100%}
-.login-form .field{margin-bottom:18px}
-.login-form label{display:block;font-size:.88rem;font-weight:600;color:var(--text-mid);margin-bottom:10px;letter-spacing:.5px}
-.login-form input{width:100%;padding:16px 18px;border-radius:var(--radius-sm);border:2px solid rgba(10,31,58,.15);background:#fff;color:var(--text);font-size:1rem;outline:none;transition:border-color .2s,box-shadow .2s}
-.login-form input:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(10,31,58,.12)}
-.login-form .hint{font-size:.78rem;color:var(--text-light);margin-top:8px;line-height:1.5}
-.login-actions{display:flex;gap:12px;justify-content:center;margin-top:22px;flex-wrap:wrap}
-.btn{font-family:var(--font-sans);font-weight:700;border:none;cursor:pointer;border-radius:999px;padding:14px 26px;text-decoration:none;display:inline-flex;align-items:center;gap:10px;transition:filter .2s,transform .15s,box-shadow .2s}
-.btn:focus{outline:none;box-shadow:0 0 0 4px rgba(10,31,58,.25)}
-.btn-primary{background:var(--primary);color:#fff}
-.btn-primary:hover{background:var(--primary-2);filter:brightness(1.06)}
-.btn-outline{background:transparent;color:var(--primary);border:2px solid rgba(10,31,58,.35)}
-.btn-outline:hover{background:rgba(10,31,58,.06)}
-.btn:disabled{cursor:not-allowed;opacity:.55}
-.btn-small{padding:10px 18px;font-size:.85rem}
-
-/* ================= DASHBOARD ================= */
-.admin{display:none}
-.admin.open{display:block}
-.admin-header{
-  display:flex;align-items:center;justify-content:space-between;gap:16px;
-  padding:16px 24px;background:var(--bg-panel);border-bottom:1px solid var(--border);
-  position:sticky;top:0;z-index:50
+.hero-content{flex:1;min-width:300px;position:relative;z-index:2}
+.greeting{font-family:var(--font-hand);font-size:1.4rem;color:var(--primary);line-height:1.4;letter-spacing:1px;margin-bottom:8px}
+.greeting strong{color:var(--accent);font-size:1.6rem}
+.name{font-family:var(--font-display);font-size:2.6rem;font-weight:900;color:var(--text);line-height:1.15;margin-bottom:6px}
+.name .accent{color:var(--accent);text-shadow:0 1px 2px rgba(184,155,106,.3)}
+.subtitle{font-size:1rem;color:var(--text-mid);font-weight:500;margin-bottom:20px}
+.hero-avatar-wrap{flex:0 0 200px;position:relative}
+.hero-avatar-wrap img{width:100%;height:100%;border-radius:50%;object-fit:cover;box-shadow:0 8px 24px rgba(10,31,58,.18)}
+.section{max-width:1100px;margin:0 auto;padding:48px 24px}
+.section-head{display:flex;align-items:center;gap:14px;margin-bottom:24px}
+.section-head h2{font-family:var(--font-display);font-size:1.6rem;font-weight:900;color:var(--primary);letter-spacing:1px}
+.grid{display:grid;gap:20px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+.card{
+  background:#fff;border:1px solid var(--border);border-left:4px solid #0089BA;
+  border-radius:16px;padding:20px;box-shadow:0 1px 3px rgba(10,31,58,.06);
 }
-.admin-header .brand{display:flex;align-items:center;gap:12px}
-.admin-header .brand .logo-icon{width:40px;height:40px;border-radius:50%;background:linear-gradient(145deg,#0a1f3a,#1e3a5f);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.1rem}
-.admin-header .page-title{font-family:var(--font-display);font-size:1.3rem;font-weight:900;color:var(--primary);letter-spacing:1px}
-.admin-header .actions{display:flex;gap:10px}
-.admin-header .top-right{display:flex;align-items:center;gap:14px}
-
-/* LAYOUT */
-.layout{display:flex;flex:1;min-height:0;overflow:hidden}
-.sidebar{width:240px;flex-shrink:0;background:var(--bg-panel);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;padding:16px 12px}
-.sidebar .brand-box{display:flex;align-items:center;gap:10px;padding:14px 14px;border-radius:var(--radius-sm);background:var(--bg-soft);border:1px solid var(--border);margin-bottom:14px}
-.sidebar .brand-box .logo-icon{width:36px;height:36px;border-radius:50%;background:linear-gradient(145deg,#0a1f3a,#1e3a5f);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1rem}
-.sidebar .brand-box .logo-text{font-weight:800;color:var(--primary);font-size:1rem;font-family:var(--font-display)}
-.sidebar .nav{display:flex;flex-direction:column;gap:4px}
-.sidebar .nav-btn{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border-radius:var(--radius-sm);background:var(--bg-panel);color:var(--text);border:1px solid transparent;font-family:var(--font-sans);font-size:.92rem;font-weight:600;text-align:left;cursor:pointer;transition:all .15s}
-.sidebar .nav-btn:hover{background:var(--bg-soft);color:var(--primary)}
-.sidebar .nav-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
-.sidebar .nav-btn .ico{width:20px;font-size:.95rem;text-align:center}
-
-.main{flex:1;overflow-y:auto;padding:24px 28px}
-
-/* ================= GARY AUDIE STYLE HERO ================= */
-.welcome-hero{
-  background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);
-  padding:36px 32px;display:flex;align-items:center;gap:48px;max-width:1100px;margin:0 auto 32px;
-  box-shadow:var(--shadow-lg);position:relative;overflow:hidden;
+.card h3{font-size:1.1rem;font-weight:800;color:var(--primary);margin-bottom:8px}
+.card p{color:var(--text-mid);font-size:.93rem;line-height:1.6}
+.skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.skill{background:#fff;border:1px solid var(--border);border-left:4px solid #0089BA;border-radius:12px;padding:14px;box-shadow:0 1px 3px rgba(10,31,58,.06)}
+.skill .name{font-weight:700;color:var(--primary);font-size:.92rem}
+.skill .level{font-size:.72rem;color:var(--text-light);margin-top:4px}
+.project-card{padding:20px}
+.project-card .title{font-size:1.08rem;font-weight:800;color:var(--primary);margin-bottom:8px}
+.project-card .tech{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.project-card .tech span{background:#eaf0f7;color:var(--text-mid);padding:3px 10px;border-radius:999px;font-size:.72rem}
+.project-card p{color:var(--text-mid);font-size:.93rem}
+.exp-card{background:#fff;border:1px solid var(--border);border-bottom:2px solid var(--border);border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(10,31,58,.06)}
+.exp-card .role{font-size:1.1rem;font-weight:800;color:var(--primary)}
+.exp-card .company{font-size:.92rem;color:var(--primary-2);font-weight:700}
+.exp-card .period{font-size:.82rem;color:var(--text-light);margin-top:4px}
+.contact-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.contact-item{background:#fff;border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center;box-shadow:0 1px 3px rgba(10,31,58,.06)}
+.contact-item .ic{font-size:1.6rem}
+.contact-item .val{font-size:1rem;font-weight:700;color:var(--text)}
+.contact-item a{color:var(--primary);text-decoration:none;font-weight:600}
+.footer{
+  background:var(--primary);color:#fff;padding:32px 24px;border-top:4px solid #0089BA;
+  border-radius:16px;text-align:center;box-shadow:0 1px 3px rgba(10,31,58,.06);
 }
-.welcome-hero::before{
-  content:'';position:absolute;right:-40px;top:-40px;width:320px;height:320px;border-radius:50%;
-  background:radial-gradient(circle,rgba(10,31,58,.05),transparent 70%);
-}
-.welcome-hero .text-col{flex:1;min-width:300px}
-.welcome-hero .greeting{font-family:var(--font-hand);font-size:1.5rem;color:var(--primary);line-height:1.4;letter-spacing:1px;margin-bottom:8px}
-.welcome-hero .greeting span{font-size:2rem}
-.welcome-hero .name{font-family:var(--font-display);font-size:2.4rem;font-weight:900;color:var(--text);line-height:1.15;margin-bottom:6px}
-.welcome-hero .name .accent{color:var(--accent);text-shadow:0 1px 2px rgba(184,155,106,.3)}
-.welcome-hero .subtitle{font-size:1rem;color:var(--text-mid);font-weight:500;margin-bottom:20px}
-.welcome-hero .actions{display:flex;gap:12px;flex-wrap:wrap}
-.welcome-hero .avatar-wrap{flex:0 0 200px;position:relative}
-.welcome-hero .avatar-wrap .avatar-img{width:100%;height:100%;border-radius:50%;object-fit:cover;box-shadow:0 8px 24px rgba(10,31,58,.18)}
-
-/* ================= FORM PANE ================= */
-.form-pane{display:flex;flex-direction:column;gap:20px;max-width:1200px;margin:0 auto}
-.form-grid{display:grid;gap:16px}
-.form-grid-2{grid-template-columns:1fr 1fr}
-.form-group{margin-bottom:18px}
-.form-group label{display:block;font-size:.88rem;font-weight:600;color:var(--text-mid);margin-bottom:8px;letter-spacing:.3px}
-.form-group input,.form-group textarea,.form-group select{width:100%;padding:13px 16px;border-radius:var(--radius-sm);border:1.5px solid var(--border);font-family:var(--font-sans);font-size:.95rem;color:var(--text);background:#fff;transition:border-color .15s,box-shadow .15s}
-.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--primary);outline:none;box-shadow:0 0 0 3px rgba(10,31,58,.12)}
-.form-group textarea{resize:vertical;min-height:84px}
-.form-hint{font-size:.78rem;color:var(--text-light);margin-top:6px}
-.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.stat-row .form-group{margin-bottom:8px}
-.focus-row{display:flex;gap:14px;align-items:center;margin-bottom:12px}
-.focus-row input{flex:1;min-width:160px}
-.photo-pick{position:relative;border:2px dashed var(--border);border-radius:var(--radius-sm);padding:14px;text-align:center;cursor:pointer;transition:border-color .15s}
-.photo-pick:hover{border-color:var(--primary)}
-.photo-pick input{position:absolute;inset:0;opacity:0;cursor:pointer}
-.photo-pick .pp-text{font-size:.82rem;color:var(--text-mid);padding:8px 0}
-.photo-pick .pp-text b{color:var(--text-mid)}
-.skill-row{display:flex;gap:14px;align-items:center;margin-bottom:12px}
-.skill-row input{flex:1;min-width:160px}
-.skill-pct{display:flex;align-items:center;gap:8px;flex:0 0 70px}
-.skill-pct label{font-size:.78rem;color:var(--text-light)}
-.skill-pct input{width:56px;text-align:right}
-.list-editor{display:flex;flex-direction:column;gap:12px}
-.item{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
-.item .full{flex:1 1 200px;min-width:200px}
-.item .pct{flex:0 0 70px;text-align:right}
-.item input,.item textarea{width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);font-family:var(--font-sans);font-size:.9rem;color:var(--text);background:#fff}
-.item input:focus,.item textarea:focus{border-color:var(--primary);outline:none;box-shadow:0 0 0 3px rgba(10,31,58,.12)}
-.item .del{margin-left:8px;background:none;border:none;color:#b02a2a;cursor:pointer;font-size:1.1rem;padding:6px 8px;line-height:1}
-.item .del:hover{color:#8a1f1f}
-.add-btn{margin-top:16px;display:inline-flex;width:100%;justify-content:center}
-
-/* ================= PREVIEW PANE ================= */
-.preview-pane{width:100%;min-height:480px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow)}
-.preview-pane .bar{display:flex;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid var(--border);font-size:.86rem;color:var(--text-mid)}
-.preview-pane .bar span{color:var(--text);font-weight:600}
-.preview-pane .preview-wrap{flex:1;padding:24px;overflow-y:auto;background:var(--bg)}
-.preview-pane .hero{background:linear-gradient(160deg,#0a1f3a 0%,#1e3a5f 55%,#243028);color:#fff;padding:56px 24px;border-radius:var(--radius-lg)}
-.preview-pane .hero .badge{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);padding:6px 16px;border-radius:999px;font-size:.8rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#fff;margin-bottom:20px}
-.preview-pane .hero .avatar-wrap .avatar-img{width:100px;height:100px;border-radius:50%;border:4px solid rgba(255,255,255,.28)}
-.preview-pane .hero h1{color:#fff;font-size:2.2rem;font-weight:800;letter-spacing:-1px}
-.preview-pane .hero .sig{font-size:1.05rem;opacity:.9;margin-bottom:8px}
-.preview-pane .hero .tagline{font-size:.95rem;opacity:.8;max-width:620px;margin:0 auto 24px}
-.preview-pane .hero .actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
-.preview-pane .hero .btn{background:#fff;color:var(--primary);font-weight:700}
-.preview-pane .hero .btn-outline{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.35)}
-.preview-pane .section{padding:40px 24px}
-.preview-pane .section-head{display:flex;align-items:center;gap:12px;margin-bottom:24px}
-.preview-pane .badge{background:#0a1f3a;color:#fff;padding:5px 14px;border-radius:999px;font-size:.75rem;font-weight:700}
-.preview-pane .grid{display:grid;gap:20px}
-.preview-pane .two-col{display:grid;grid-template-columns:1fr 1.2fr;gap:28px}
-.preview-pane .card{background:#fff;border:1px solid var(--border);border-left:4px solid #0089BA;border-radius:var(--radius-sm);padding:20px;box-shadow:0 1px 3px rgba(10,31,58,.06)}
-.preview-pane .card h3{font-size:1.1rem;font-weight:800;color:var(--primary);margin-bottom:8px}
-.preview-pane .card p{color:var(--text-mid);font-size:.9rem;line-height:1.6}
-.preview-pane .skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
-.preview-pane .skill{background:#fff;border:1px solid var(--border);border-left:4px solid #0089BA;border-radius:var(--radius-sm);padding:14px;box-shadow:0 1px 3px rgba(10,31,58,.06)}
-.preview-pane .project-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-sm);padding:20px;box-shadow:0 1px 3px rgba(10,31,58,.06);display:flex;gap:18px;align-items:flex-start}
-.preview-pane .project-card .title{font-size:1.08rem;font-weight:800;color:var(--primary)}
-.preview-pane .project-card .tech{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
-.preview-pane .project-card .tech span{background:#eaf0f7;color:var(--text-mid);padding:3px 10px;border-radius:999px;font-size:.72rem}
-.preview-pane .project-card p{color:var(--text-mid);font-size:.93rem}
-.preview-pane .exp-card{background:#fff;border:1px solid var(--border);border-bottom:2px solid var(--border);border-radius:var(--radius-sm);padding:18px;box-shadow:0 1px 3px rgba(10,31,58,.06)}
-.preview-pane .exp-card .role{font-size:1.1rem;font-weight:800;color:var(--primary)}
-.preview-pane .exp-card .company{font-size:.92rem;color:var(--primary-2);font-weight:700}
-.preview-pane .contact-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-.preview-pane .contact-item{background:#fff;border:1px solid var(--border);border-radius:var(--radius-sm);padding:18px;text-align:center;box-shadow:0 1px 3px rgba(10,31,58,.06)}
-.preview-pane .contact-item .ic{font-size:1.4rem}
-.preview-pane .contact-item .val{font-size:.92rem;font-weight:700;color:var(--text)}
-.preview-pane .footer{background:var(--primary);color:#fff;padding:32px 24px;border-top:4px solid var(--primary);border-radius:var(--radius-sm)}
-.preview-pane .footer .copyright{font-size:.82rem;opacity:.75}
-
-/* ================= TOAST ================= */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--primary);color:#fff;padding:12px 22px;border-radius:999px;font-size:.85rem;z-index:300;opacity:0;transition:all .3s;pointer-events:none}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.toast.error{background:#b02a2a}
-.toast.success{background:#008F7A}
-.toast.info{background:var(--primary)}
-
-/* ================= RESPONSIVE ================= */
+.footer .copyright{font-size:.82rem;opacity:.75}
 @media (max-width:960px){
-  .welcome-hero{flex-direction:column;text-align:center;padding:28px 20px}
-  .welcome-hero .text-col{min-width:0}
-  .welcome-hero .avatar-wrap{flex:0 0 140px;margin:0 auto}
-  .welcome-hero .greeting{font-size:1.2rem}
-  .welcome-hero .name{font-size:1.9rem}
-  .form-grid-2{grid-template-columns:1fr}
-  .preview-pane .contact-grid{grid-template-columns:1fr}
+  .hero{flex-direction:column;text-align:center}
+  .hero-avatar-wrap{flex:0 0 140px;margin:0 auto}
+  .name{font-size:2rem}
+  .section{padding:32px 16px}
 }
 @media (max-width:640px){
-  .sidebar{width:0 !important;overflow:hidden;position:absolute;left:-9999px}
-  .main{padding:16px}
-  .admin-header{padding:12px 16px}
-  .preview-pane{min-height:360px}
+  .nav a{font-size:.85rem;padding:8px 12px}
+  .name{font-size:1.6rem}
+  .contact-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
 <body>
 
-<!-- ================= LOGIN ================= -->
-<div class="login-overlay" id="loginScreen">
-  <div class="login-logo">
-    <div class="logo-icon">WP</div>
-    <div>
-      <div class="logo-text">Admin — Wisnu Pandu</div>
-      <div class="sub">hi, i'm <span style="color:#0089BA;">Wisnu</span></div>
-    </div>
-  </div>
-  <div class="login-form">
-    <div class="field">
-      <label for="loginPassword">Password admin</label>
-      <input id="loginPassword" type="password" placeholder="••••••••" autocomplete="off">
-      <div class="hint">Password default: <strong>admin123</strong> · Ganti di Pengaturan.</div>
-    </div>
-    <div class="login-actions">
-      <button class="btn btn-primary" id="loginBtn">Masuk</button>
-      <button class="btn btn-outline" id="cancelLoginBtn">Batal</button>
-    </div>
-  </div>
+<div class="nav-wrap">
+  <nav class="nav">
+    <a href="#tentang">Tentang</a>
+    <a href="#keterampilan">Keterampilan</a>
+    <a href="#proyek">Proyek</a>
+    <a href="#pengalaman">Pengalaman</a>
+    <a href="#kontak">Kontak</a>
+  </nav>
 </div>
 
-<!-- ================= DASHBOARD ================= -->
-<div class="admin" id="admin">
-  <header class="admin-header">
-    <div class="brand">
-      <div class="logo-icon">WP</div>
-      <span style="font-family:var(--font-display);font-weight:900;color:var(--primary);letter-spacing:1px;font-size:1.1rem;">Wisnu Pandu</span>
-    </div>
-    <div class="page-title" id="editorTitle" style="font-family:var(--font-display);font-size:1.2rem;color:var(--primary);">Profil &amp; Umum</div>
-    <div class="actions">
-      <button class="btn btn-outline btn-small" id="saveDraftBtn">💾 Simpan draft</button>
-      <button class="btn btn-primary btn-small" id="pushDataBtn">⬆ Upload</button>
-    </div>
-  </header>
-
-  <div class="layout">
-    <aside class="sidebar">
-      <div class="brand-box">
-        <div class="logo-icon">WP</div>
-        <span class="logo-text">Wisnu Pandu</span>
-      </div>
-      <nav class="nav">
-        <button class="nav-btn active" data-section="profile"><span class="ico">👤</span><span class="txt">Profil &amp; Umum</span></button>
-        <button class="nav-btn" data-section="about"><span class="ico">📝</span><span class="txt">Tentang</span></button>
-        <button class="nav-btn" data-section="skills"><span class="ico">🛠</span><span class="txt">Keterampilan</span></button>
-        <button class="nav-btn" data-section="projects"><span class="ico">📦</span><span class="txt">Proyek</span></button>
-        <button class="nav-btn" data-section="experience"><span class="ico">🕰</span><span class="txt">Pengalaman</span></button>
-        <button class="nav-btn" data-section="contact"><span class="ico">✉</span><span class="txt">Kontak</span></button>
-        <button class="nav-btn" data-section="settings"><span class="ico">⚙</span><span class="txt">Pengaturan &amp; Simpan</span></button>
-      </nav>
-    </aside>
-
-    <main class="main">
-      <div class="welcome-hero">
-        <div class="text-col">
-          <div class="greeting">hi, i'm <strong>Wisnu</strong></div>
-          <div class="name"><span class="accent">Wisnu</span> <span id="welcomeName">Pandu Hidayat</span></div>
-          <div class="subtitle" id="welcomeSubtitle">Production Manager &amp; Operational Excellence</div>
-          <div class="actions">
-            <button class="btn btn-primary" onclick="showSection('profile')">👤 Profil &amp; Umum</button>
-            <button class="btn btn-outline" onclick="showSection('projects')">📦 Proyek</button>
-            <button class="btn btn-outline" onclick="showSection('contact')">✉ Kontak</button>
-          </div>
-        </div>
-        <div class="avatar-wrap">
-          <img class="avatar-img" id="welcomeAvatar" src="" alt="Foto profil">
-        </div>
-      </div>
-
-      <div class="form-pane">
-        <div id="formPane"></div>
-        <aside class="preview-pane">
-          <div class="bar"><span>👁</span> Preview Dapat Dilihat</div>
-          <div class="preview-wrap" id="previewContent"></div>
-        </aside>
-      </div>
-    </main>
+<header class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="greeting">hi, i'm <strong style="font-size:1.6rem;">Wisnu Pandu Hidayat</strong></div>
+    <div class="name"><span class="accent">Wisnu Pandu Hidayat</span></div>
+    <div class="subtitle">Production Manager &amp; Operational Excellence · 8+ tahun di industri manufaktur</div>
   </div>
-</div>
+  <div class="hero-avatar-wrap">
+    <img src="images/avatar_placeholder.svg" alt="Foto profil Wisnu Pandu Hidayat">
+  </div>
+</header>
 
-<div class="toast" id="toast"></div>
+<main>
+  <section class="section" id="tentang">
+    <div class="section-head"><h2>Tentang Saya</h2></div>
+    <div class="grid">
+      <div class="card"><h3>Produksi &amp; Operasional</h3><p>8+ tahun pengalaman di industri manufaktur, membangun sistem operasi, mengoptimalkan proses produksi, dan memimpin tim lintas fungsi untuk mencapai efisiensi maksimal.</p></div>
+      <div class="card"><h3>Karakter</h3><p>Sabar, berperilaku, dan terbuka pada umpan balik. Selalu berusaha untuk terus belajar dan memperbaiki diri demi kesuksesan tim dan perusahaan.</p></div>
+    </div>
+  </section>
 
-<script>
-var SITE = (typeof window.SITE !== 'undefined') ? window.SITE : {};
-var DRAFT_KEY='wisnu_admin_draft', GH_TOKEN_KEY='wisnu_gh_token';
-var ADMIN_PASSWORD='admin123';
-var $ = function(id){ if(!id)return null; return document.getElementById((id||'').replace(/^#/,'')); };
-var $$ = function(sel){ return Array.prototype.slice.call(document.querySelectorAll(sel)); };
-var STATE = { section:'profile' };
-var SECTIONS = {
-  profile:{ title:'Profil & Umum', icon:'👤' },
-  about:{ title:'Tentang', icon:'📝' },
-  skills:{ title:'Keterampilan', icon:'🛠' },
-  projects:{ title:'Proyek', icon:'📦' },
-  experience:{ title:'Pengalaman', icon:'🕰' },
-  contact:{ title:'Kontak', icon:'✉' },
-  settings:{ title:'Pengaturan & Simpan', icon:'⚙' }
-};
+  <section class="section" id="keterampilan">
+    <div class="section-head"><h2>Keterampilan</h2></div>
+    <div class="skills-grid">
+      <div class="skill"><div class="name">Agile / Scrum</div><div class="level">85%</div></div>
+      <div class="skill"><div class="name">Lean Manufacturing</div><div class="level">80%</div></div>
+      <div class="skill"><div class="name">Production Planning</div><div class="level">90%</div></div>
+      <div class="skill"><div class="name">Data Analysis</div><div class="level">75%</div></div>
+      <div class="skill"><div class="name">Team Leadership</div><div class="level">85%</div></div>
+      <div class="skill"><div class="name">ERP Systems</div><div class="level">70%</div></div>
+      <div class="skill"><div class="name">Quality Control</div><div class="level">80%</div></div>
+      <div class="skill"><div class="name">Communication</div><div class="level">90%</div></div>
+    </div>
+  </section>
 
-function escapeAttr(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/\//g,'&#47;'); }
-function setValue(path, val){
-  var node=SITE, keys=path.split('.');
-  for(var i=0;i<keys.length-1;i++){
-    var k=keys[i];
-    if(node[k]===undefined||node[k]===null)node[k]={};
-    if(typeof node[k]!=='object')node[k]={};
-    node=node[k];
-  }
-  var last=keys[keys.length-1];
-  if(val===null||val===undefined){ delete node[last]; return; }
-  node[last]=val;
-}
-function getVal(path){
-  var node=SITE, keys=path.split('.');
-  for(var i=0;i<keys.length;i++){
-    if(node===undefined||node===null)return undefined;
-    node=node[keys[i]];
-  }
-  return node;
-}
-function persist(){
-  try{localStorage.setItem(DRAFT_KEY,JSON.stringify(SITE));}catch(e){}
-  try{localStorage.setItem('admin_logged_in','true');}catch(e){}
-}
-function loadDraft(){
-  try{ var d=localStorage.getItem(DRAFT_KEY); if(d)SITE=JSON.parse(d); }catch(e){ SITE={}; }
-}
+  <section class="section" id="proyek">
+    <div class="section-head"><h2>Proyek</h2></div>
+    <div class="grid">
+      <div class="card project-card">
+        <div class="title">Optimalisasi Produksi Otomasi</div>
+        <div class="tech"><span>Automation</span><span>SAP</span><span>ERP</span><span>Maintenance</span></div>
+        <p>Mengoptimalkan proses produksi otomasi di pabrik manufaktur, mengurangi throughput waktu produksi sebesar 20%.</p>
+      </div>
+      <div class="card project-card">
+        <div class="title">Sistem Plan-do-check-act (PDCA)</div>
+        <div class="tech"><span>Lean</span><span>Quality</span><span>Management</span></div>
+        <p>Menerapkan sistem PDCA untuk meningkatkan kualitas standar produksi dan mengurangi defect rate.</p>
+      </div>
+      <div class="card project-card">
+        <div class="title">Digitalisasi Data Produksi</div>
+        <div class="tech"><span>Data</span><span>Analytics</span><span>IoT</span></div>
+        <p>Digitalisasi data produksi dalam bentuk dashboard real-time untuk memantau kinerja pabrik secara efisien.</p>
+      </div>
+    </div>
+  </section>
 
-function showSection(key){
-  STATE.section=key;
-  var p=SECTIONS[key];
-  $('editorTitle').textContent=(p?p.icon+' ':'')+p.title;
-  $$('.nav-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.section===key); b.querySelector('.txt').style.display=b.dataset.section===key?'inline':'none'; });
-  renderForm();
-  refreshPreview();
-  window.scrollTo(0,0);
-}
-function renderForm(){
-  var html='';
-  if(STATE.section==='profile')html=profileForm();
-  else if(STATE.section==='about')html=aboveForm();
-  else if(STATE.section==='skills')html=skillsForm();
-  else if(STATE.section==='projects')html=projectsForm();
-  else if(STATE.section==='experience')html=experienceForm();
-  else if(STATE.section==='contact')html=contactForm();
-  else if(STATE.section==='settings')html=settingsForm();
-  $('formPane').innerHTML=html;
-  $('previewContent').innerHTML=guestHTML();
-  bindInputs();
-}
-function profileForm(){
-  var s=SITE.site||{};
-  return (
-    '<div class="form-grid">'+
-      '<div class="form-group"><label>Judul Website (H1)</label><input id="f-site-title" data-path="site.title" value="'+escapeAttr(s.title)+'" placeholder="Wisnu Pandu Hidayat"></div>'+
-      '<div class="form-group"><label>Subjudul</label><input id="f-site-subtitle" data-path="site.subtitle" value="'+escapeAttr(s.subtitle)+'" placeholder="Production Manager"></div>'+
-      '<div class="form-group"><label>Tagline</label><input id="f-site-tagline" data-path="site.tagline" value="'+escapeAttr(s.tagline)+'" placeholder="8+ tahun di industri manufaktur"></div>'+
-      '<div class="form-group"><label>Deskripsi singkat</label><textarea id="f-site-description" data-path="site.description" rows="3" placeholder="Deskripsi singkat">'+escapeAttr(s.description)+'</textarea></div>'+
-    '</div>'+
-    '<div class="form-grid form-grid-2">'+
-      '<div class="form-group"><label>Avatar (teks)</label><input id="f-site-avatar" data-path="site.avatar" value="'+escapeAttr(s.avatar)+'" placeholder="WP"></div>'+
-      '<div class="form-group"><label>Foto Profil (URL)</label><input id="f-site-photo" data-path="site.photo" value="'+escapeAttr(s.photo)+'" placeholder="https://..."></div>'+
-    '</div>'+
-    '<div class="form-group"><div class="photo-pick"><input type="file" id="f-site-photo-file" accept="image/*"><div class="pp-text">Klik untuk pilih gambar. Maks 1MB. <b>Belum ada foto.</b></div></div><input type="hidden" id="f-site-photo" data-path="site.photo" value="'+escapeAttr(s.photo)+'"></div>'+
-    '<div class="form-group"><label style="display:flex;align-items:center;gap:10px;font-weight:400;"><input id="f-site-isDark" type="checkbox" data-path="site.isDark"'+(s.isDark?' checked':'')+'> Aktifkan tema gelap (mode gelap)</label></div>'
-  );
-}
-function aboveForm(){
-  var a=SITE.about||{};
-  var stats=(a.stats||[]).map(function(st,i){return '<div class="form-group"><label>Statistik '+(i+1)+'</label><div class="stat-row"><input data-path="about.stats.'+i+'.label" placeholder="Label" value="'+escapeAttr(st.label)+'"><input data-path="about.stats.'+i+'.value" placeholder="Nilai" value="'+escapeAttr(st.value)+'"></div></div>';}).join("");
-  var focus=(a.focus||[]).map(function(f,i){return '<div class="focus-row"><input data-path="about.focus.'+i+'" placeholder="Fokus '+(i+1)+'" value="'+escapeAttr(f)+'"></div>';}).join("");
-  return (
-    '<div class="form-group"><label>Nama</label><input id="f-about-name" data-path="about.name" value="'+escapeAttr(a.name)+'"></div>'+
-    '<div class="form-group"><label>Jabatan</label><input id="f-about-title" data-path="about.title" value="'+escapeAttr(a.title)+'"></div>'+
-    '<div class="form-group"><label>Bio</label><textarea id="f-about-bio" data-path="about.bio" rows="5">'+escapeAttr(a.bio)+'</textarea></div>'+
-    '<div class="form-group"><label>Statistik (label &amp; nilai)</label><div class="stat-row" id="statList">'+stats+'</div><p class="form-hint">Isi 2–4 baris.</p></div>'+
-    '<div class="form-group"><label>Fokus (hal yang diprioritaskan)</label><div id="focusList">'+focus+'</div><p class="form-hint">Input 1 tiap baris.</p></div>'
-  );
-}
-function skillsForm(){
-  var skills=SITE.skills||[], rows=skills.map(function(sk,i){return '<div class="item"><div class="full"><label>Skill '+(i+1)+'</label><input data-path="skills.'+i+'.name" value="'+escapeAttr(sk.name)+'" placeholder="Nama skill"></div><div class="pct"><label style="font-size:.78rem;color:var(--text-light);">%</label><input type="number" min="0" max="100" data-path="skills.'+i+'.level" value="'+((sk.level||0))+'"></div><button class="del" data-del="skill" data-idx="'+i+'">✕</button></div>';}).join("");
-  return '<div class="list-editor" id="skillList">'+rows+'</div><button class="btn btn-primary add-btn" id="addSkillBtn">+ Tambah keterampilan</button>';
-}
-function projectsForm(){
-  var projects=SITE.projects||[], rows=projects.map(function(p,i){var photo="";
-    if(p.photo)photo='<div class="photo-pick" style="border-style:solid;"><input type="file" data-path="projects.'+i+'.photo" accept="image/*"><div class="pp-text"><b>Foto ada</b> — klik untuk ganti.</div></div>';
-    return '<div class="item"><div class="full"><label>Judul proyek</label><input data-path="projects.'+i+'.title" value="'+escapeAttr(p.title)+'" placeholder="Judul proyek"></div>'+
-      '<div class="full"><label>Tech (pisah spasi)</label><input data-path="projects.'+i+'.tech" value="'+escapeAttr((p.tech||[]).join(' '))+'" placeholder="React Node.js"></div>'+
-      '<div class="full"><label>Link situs</label><input data-path="projects.'+i+'.link" value="'+escapeAttr(p.link)+'" placeholder="https://"></div>'+
-      '<div class="full"><label>Tanggal</label><input data-path="projects.'+i+'.date" type="date" value="'+escapeAttr(p.date||'')+'"></div>'+
-      '<div class="full" style="align-self:start;">'+photo+'</div>'+
-      '<button class="del" data-del="project" data-idx="'+i+'">✕</button></div>';}).join("");
-  return '<div class="list-editor" id="projectList">'+rows+'</div><button class="btn btn-primary add-btn" id="addProjectBtn">+ Tambah proyek</button>';
-}
-function experienceForm(){
-  var exps=SITE.experience||[], rows=exps.map(function(e,i){return '<div class="item"><div class="full"><label>Posisi / Peran</label><input data-path="experience.'+i+'.role" value="'+escapeAttr(e.role)+'" placeholder="Posisi"></div><div class="full"><label>Perusahaan</label><input data-path="experience.'+i+'.company" value="'+escapeAttr(e.company)+'" placeholder="Perusahaan"></div><div class="full"><label>Periode</label><input data-path="experience.'+i+'.period" value="'+escapeAttr(e.period)+'" placeholder="Periode"></div><button class="del" data-del="experience" data-idx="'+i+'">✕</button></div>';}).join("");
-  return '<div class="list-editor" id="expList">'+rows+'</div><button class="btn btn-primary add-btn" id="addExpBtn">+ Tambah pengalaman</button>';
-}
-function contactForm(){
-  var c=SITE.contact||{};
-  return '<div class="form-group"><label>Email</label><input data-path="contact.email" value="'+escapeAttr(c.email)+'"></div>'+
-    '<div class="form-group"><label>Telepon</label><input data-path="contact.phone" value="'+escapeAttr(c.phone)+'"></div>'+
-    '<div class="form-grid form-grid-2">'+
-      '<div class="form-group"><label>GitHub</label><input data-path="contact.github" value="'+escapeAttr(c.github)+'"></div>'+
-      '<div class="form-group"><label>LinkedIn</label><input data-path="contact.linkedin" value="'+escapeAttr(c.linkedin)+'"></div>'+
-    '</div>';
-}
-function settingsForm(){
-  var token=localStorage.getItem(GH_TOKEN_KEY)||"";
-  return '<div class="form-group"><label>GitHub Token (scope: repo)</label><input id="ghToken" type="password" placeholder="ghp_..." value="'+escapeAttr(token)+'"><p class="form-hint">Klik <strong>Simpan token</strong> lalu <strong>Upload</strong>.</p></div>'+
-    '<div class="form-grid form-grid-2">'+
-      '<div class="form-group"><label>Username repo</label><input id="ghOwner" value="MasWisnu8" placeholder="Username (misal MasWisnu8)"></div>'+
-      '<div class="form-group"><label>Nama repo</label><input id="ghRepo" value="Wisnu-Pandu"></div>'+
-    '</div>'+
-    '<div class="form-group"><label>Branch</label><input id="ghBranch" value="main"></div>'+
-    '<div class="form-group"><button class="btn btn-primary" id="saveGHToken">Simpan token</button><button class="btn btn-outline" id="clearGHToken">Hapus token</button></div>'+
-    '<div class="form-group" style="margin-top:12px;"><button class="btn btn-primary" id="pushDataBtn">⬆ Upload data.js ke repo</button><p class="form-hint">Token disimpan di browser Anda.</p></div>';
-}
+  <section class="section" id="pengalaman">
+    <div class="section-head"><h2>Pengalaman</h2></div>
+    <div class="grid">
+      <div class="exp-card"><div class="role">Production Manager</div><div class="company">PT. Industri Manufaktur Indonesia</div><div class="period">2020 — Sekarang · 4+ tahun</div></div>
+      <div class="exp-card"><div class="role">Senior Production Engineer</div><div class="company">PT. Teknologi Pabrik</div><div class="period">2017 — 2020 · 3 tahun</div></div>
+      <div class="exp-card"><div class="role">Production Engineer</div><div class="company">PT. Manufaktur Lain</div><div class="period">2014 — 2017 · 3 tahun</div></div>
+    </div>
+  </section>
 
-function bindInputs(){
-  var pane=$('formPane');
-  var inputs=pane.querySelectorAll('input, textarea, select');
-  var pathMap={
-    'f-site-title':'site.title','f-site-subtitle':'site.subtitle','f-site-tagline':'site.tagline',
-    'f-site-description':'site.description','f-site-avatar':'site.avatar','f-site-photo':'site.photo',
-    'f-site-isDark':'site.isDark','f-about-name':'about.name','f-about-title':'about.title',
-    'f-about-bio':'about.bio','f-contact-email':'contact.email','f-contact-phone':'contact.phone',
-    'f-contact-github':'contact.github','f-contact-linkedin':'contact.linkedin'
-  };
-  inputs.forEach(function(el){
-    var path=el.dataset&&el.dataset.path;
-    if(!path)path=pathMap[el.id];
-    if(!path)return;
-    if(el.type==='file')return;
-    el.addEventListener('input',function(){ setValue(path,el.value); refreshPreview(); });
-  });
-  var darkCheck=$('f-site-isDark');
-  if(darkCheck){ darkCheck.addEventListener('change',function(){ setValue(darkCheck.dataset.path,darkCheck.checked); refreshPreview(); }); }
-  pane.querySelectorAll('input[type=file]').forEach(function(fi){
-    fi.addEventListener('change',function(){
-      var file=fi.files&&fi.files[0];
-      if(!file)return;
-      if(file.size>1024*1024){ toast('Gambar terlalu besar (maks 1MB).'); return; }
-      var reader=new FileReader();
-      reader.onload=function(e){
-        var path=fi.dataset.path;
-        if(path)setValue(path,e.target.result);
-        refreshPreview();
-        toast('Foto dipilih.');
-      };
-      reader.readAsDataURL(file);
-    });
-  });
-  pane.querySelectorAll('.del').forEach(function(btn){
-    btn.addEventListener('click',function(){
-      var type=btn.dataset.del, idx=parseInt(btn.dataset.idx,10);
-      if(type==='skill')getVal(['skills']).splice(idx,1);
-      else if(type==='project')getVal(['projects']).splice(idx,1);
-      else if(type==='experience')getVal(['experience']).splice(idx,1);
-      persist(); renderForm(); refreshPreview();
-    });
-  });
-  $('#addSkillBtn')&&$('#addSkillBtn').addEventListener('click',function(){
-    getVal(['skills']).push({name:'',level:60}); persist(); renderForm(); refreshPreview();
-  });
-  $('#addProjectBtn')&&$('#addProjectBtn').addEventListener('click',function(){
-    getVal(['projects']).push({title:'',tech:[],link:'',date:''}); persist(); renderForm(); refreshPreview();
-  });
-  $('#addExpBtn')&&$('#addExpBtn').addEventListener('click',function(){
-    getVal(['experience']).push({role:'',company:'',period:''}); persist(); renderForm(); refreshPreview();
-  });
-  $('#saveGHToken')&&$('#saveGHToken').addEventListener('click',function(){
-    var t=$('#ghToken').value.trim();
-    if(!t){ toast('Token kosong. Isi token GitHub.'); return; }
-    localStorage.setItem(GH_TOKEN_KEY,t); toast('Token disimpan.');
-  });
-  $('#clearGHToken')&&$('#clearGHToken').addEventListener('click',function(){
-    localStorage.removeItem(GH_TOKEN_KEY); $('#ghToken').value=''; toast('Token dihapus.');
-  });
-  $$('.nav-btn').forEach(function(b){ b.addEventListener('click',function(){ showSection(b.dataset.section); }); });
-  $('#guestBtn')&&$('#guestBtn').addEventListener('click',function(){ window.open(location.origin+(location.pathname.split('/').pop()==='index.html'?'':'/'),'_blank'); });
-  $('#pushDataBtn')&&$('#pushDataBtn').addEventListener('click',function(){ var t=$('#ghToken').value.trim(); if(!t){ toast('Token belum diisi.'); return; } pushToGitHub(t); });
-  $('#darkToggle')&&$('#darkToggle').addEventListener('change',function(){ document.body.classList.toggle('dark'); document.documentElement.classList.toggle('dark'); });
-}
+  <section class="section" id="kontak">
+    <div class="section-head"><h2>Kontak</h2></div>
+    <div class="contact-grid">
+      <div class="contact-item"><div class="ic">✉</div><div class="val"><a href="mailto:wisnu@email.com">wisnu@email.com</a></div></div>
+      <div class="contact-item"><div class="ic">📱</div><div class="val"><a href="tel:+6281234567890">0812-3456-7890</a></div></div>
+      <div class="contact-item"><div class="ic">🐙</div><div class="val"><a href="https://github.com/maswisnu8">github.com/maswisnu8</a></div></div>
+      <div class="contact-item"><div class="ic">💼</div><div class="val"><a href="https://linkedin.com/in/wisnu">linkedin.com/in/wisnu</a></div></div>
+    </div>
+  </section>
+</main>
 
-function refreshPreview(){
-  var wrap=$('previewContent');
-  wrap.innerHTML=guestHTML();
-  var style=document.createElement('style');
-  style.textContent=guestCSS();
-  wrap.insertBefore(style,wrap.firstChild);
-}
-function guestCSS(){
-  return (
-    'body{background:#faf8f3;color:#1a1a1a;font-family:"Inter",sans-serif;line-height:1.7}'+
-    'h1,h2{font-weight:800;line-height:1.2}'+
-    'header{background:#fff;border-bottom:1px solid #e3ddd3;height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 24px}'+
-    'nav ul{list-style:none;display:flex;gap:6px}'+
-    'nav a{padding:8px 12px;text-decoration:none;color:#5a5a5a;font-weight:600;border-radius:8px;transition:background .15s}'+
-    'nav a:hover{background:#0a1f3a;color:#fff}'+
-    '.hero{background:linear-gradient(160deg,#0a1f3a 0%,#1e3a5f 55%,#243028);color:#fff;padding:56px 24px;border-radius:var(--radius-lg)}'+
-    '.hero h1{color:#fff;font-size:2.2rem;font-weight:800;letter-spacing:-1px}'+
-    '.hero .avatar-wrap .avatar-img{width:100px;height:100px;border-radius:50%;border:4px solid rgba(255,255,255,.28);overflow:hidden}'+
-    '.hero .actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}'+
-    '.hero .btn{background:#fff;color:var(--primary);font-weight:700}'+
-    '.hero .btn-outline{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.35)}'+
-    '.section{padding:40px 24px}'+
-    '.section-head{display:flex;align-items:center;gap:12px;margin-bottom:24px}'+
-    '.badge{background:#0a1f3a;color:#fff;padding:5px 14px;border-radius:999px;font-size:.75rem;font-weight:700}'+
-    '.about-card{background:#fff;border:1px solid var(--border);border-left:4px solid #0089BA;border-radius:var(--radius-sm);padding:24px;box-shadow:0 1px 3px rgba(10,31,58,.06)}'+
-    '.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:22px 0}'+
-    '.stat{background:#faf8f3;border-radius:var(--radius-sm);padding:16px;text-align:center}'+
-    '.stat-number{font-size:1.5rem;font-weight:800}'+
-    '.skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}'+
-    '.skill{background:#fff;border:1px solid var(--border);border-left:4px solid #0089BA;border-radius:var(--radius-sm);padding:14px;box-shadow:0 1px 3px rgba(10,31,58,.06)}'+
-    '.project-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-sm);padding:20px;box-shadow:0 1px 3px rgba(10,31,58,.06)}'+
-    '.project-card .title{font-size:1.08rem;font-weight:800;color:var(--primary)}'+
-    '.project-card .tech{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}'+
-    '.project-card .tech span{background:#eaf0f7;color:var(--text-mid);padding:3px 10px;border-radius:999px;font-size:.72rem}'+
-    '.project-card p{color:var(--text-mid);font-size:.93rem}'+
-    '.exp-card{background:#fff;border:1px solid var(--border);border-bottom:2px solid var(--border);border-radius:var(--radius-sm);padding:18px;box-shadow:0 1px 3px rgba(10,31,58,.06)}'+
-    '.exp-card .role{font-size:1.1rem;font-weight:800;color:var(--primary)}'+
-    '.exp-card .company{font-size:.92rem;color:var(--primary-2);font-weight:700}'+
-    '.contact-item{background:#fff;border:1px solid var(--border);border-radius:var(--radius-sm);padding:18px;text-align:center;box-shadow:0 1px 3px rgba(10,31,58,.06)}'+
-    '.contact-item .ic{font-size:1.4rem}'+
-    '.contact-item .val{font-size:.92rem;font-weight:700;color:var(--text)}'+
-    '.footer{background:var(--primary);color:#fff;padding:32px 24px;border-top:4px solid var(--primary);border-radius:var(--radius-sm)}'+
-    '.footer .copyright{font-size:.82rem;opacity:.75}'
-  );
-}
-function guestHTML(){
-  var s=SITE.site||{}, a=SITE.about||{}, sc=SITE.skills||[], pj=SITE.projects||[], exp=SITE.experience||[], c=SITE.contact||{};
-  function imgF(){
-    return s.photo || 'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="#0a1f3a" width="100" height="100" rx="50"/><text x="50" y="58" font-size="54" font-family="Inter,sans-serif" font-weight="800" fill="#fff" text-anchor="middle">'+escapeAttr(s.avatar||'WP')+'</text></svg>');
-  }
-  var stats=(a.stats||[]).map(function(st){return '<div class="stat"><div class="stat-number">'+escapeAttr(st.value)+'</div><div class="stat-label">'+escapeAttr(st.label)+'</div></div>';}).join("");
-  var skills=sc.map(function(sk){return '<div class="skill"><div class="name">'+escapeAttr(sk.name)+'</div><div class="level">'+((sk.level||0))+'%</div></div>';}).join("");
-  var projects=pj.map(function(p){return '<div class="project-card"><div class="title">'+escapeAttr(p.title)+'</div><div class="tech">'+(p.tech||[]).map(function(t){return '<span>'+escapeAttr(t)+'</span>';}).join('')+'</div><p style="color:#5a5a5a;">'+escapeAttr(p.description||"")+'</p></div>';}).join("");
-  var experiences=exp.map(function(e){return '<div class="exp-card"><div class="role">'+escapeAttr(e.role)+'</div><div class="company">'+escapeAttr(e.company)+'</div><div class="period">'+escapeAttr(e.period)+'</div></div>';}).join("");
-  var contactHtml='<div class="contact-item"><div class="ic">✉</div><div class="label">Email</div><div class="val"><a href="mailto:'+escapeAttr(c.email||"")+'">'+escapeAttr(c.email||"")+'</a></div></div>';
-  if(c.phone)contactHtml+='<div class="contact-item"><div class="ic">📱</div><div class="label">Telepon</div><div class="val">'+escapeAttr(c.phone)+'</div></div>';
-  contactHtml+='<div class="contact-item"><div class="ic">🐙</div><div class="label">GitHub</div><div class="val"><a href="'+escapeAttr(c.github||'#')+'" target="_blank" rel="noopener">github.com</a></div></div>';
-  contactHtml+='<div class="contact-item"><div class="ic">💼</div><div class="label">LinkedIn</div><div class="val"><a href="'+escapeAttr(c.linkedin||'#')+'" target="_blank" rel="noopener">linkedin.com</a></div></div>';
-  return (
-    '<header><div style="max-width:1100px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;"><a style="display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:1.2rem;font-weight:900;color:#0a1f3a;"><span style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#0a1f3a,#1e3a5f);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;">WP</span>Wisnu Pandu</a><nav><ul style="list-style:none;display:flex;gap:6px;">'+
-    '<li><a style="padding:8px 12px;border-radius:8px;text-decoration:none;color:#5a5a5a;font-weight:600;" href="#tentang">Tentang</a></li>'+
-    '<li><a style="padding:8px 12px;border-radius:8px;text-decoration:none;color:#5a5a5a;font-weight:600;" href="#keterampilan">Keterampilan</a></li>'+
-    '<li><a style="padding:8px 12px;border-radius:8px;text-decoration:none;color:#5a5a5a;font-weight:600;" href="#proyek">Proyek</a></li>'+
-    '<li><a style="padding:8px 12px;border-radius:8px;text-decoration:none;color:#5a5a5a;font-weight:600;" href="#pengalaman">Pengalaman</a></li>'+
-    '<li><a style="padding:8px 12px;border-radius:8px;text-decoration:none;color:#5a5a5a;font-weight:600;" href="#kontak">Kontak</a></li>'+
-    '<li><a class="btn btn-primary btn-small" style="padding:8px 12px;" href="mailto:'+escapeAttr(c.email||"")+'">✉ Hubungi</a></li>'+
-    '</ul></nav></div></header>'+
-    '<section class="hero"><div style="max-width:1100px;margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:48px;position:relative;overflow:hidden;">'+
-    '<div style="flex:1;min-width:300px;display:flex;flex-direction:column;gap:12px;">'+
-    '<span class="badge" style="display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);padding:6px 16px;border-radius:999px;font-size:.8rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#fff;margin-bottom:20px;">Halo, Saya</span>'+
-    '<div class="hero-avatar" style="width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.14);border:4px solid rgba(255,255,255,.28);margin:0 auto 22px;display:flex;align-items:center;justify-content:center;font-size:2.4rem;font-weight:800;overflow:hidden;"><img src="'+imgF()+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>'+
-    '<h1 style="color:#fff;font-size:2.2rem;font-weight:800;letter-spacing:-1px;">'+escapeAttr(s.title)+'</h1>'+
-    '<p style="font-size:1.05rem;opacity:.9;margin-bottom:8px;">'+escapeAttr(s.subtitle)+'</p>'+
-    '<p style="font-size:.95rem;opacity:.8;max-width:620px;margin:0 auto 26px;">'+escapeAttr(s.tagline)+'</p>'+
-    '<div class="actions" style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;"><a class="btn" style="background:#fff;color:var(--primary);" href="#tentang">Pelajari</a><a class="btn btn-outline" style="background:transparent;color:#fff;border:2px solid rgba(255,255,255,.35);" href="#proyek">Proyek</a></div>'+
-    '</div></div>'+
-    '<div style="flex:0 0 200px;position:relative;overflow:hidden;border-radius:50%;"><img src="'+imgF()+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;border:4px solid rgba(255,255,255,.28);box-shadow:0 8px 24px rgba(10,31,58,.18);"></div>'+
-    '</section>'+
-    '<section class="section" id="tentang"><div style="max-width:1100px;margin:0 auto;padding:0 24px;"><div class="section-head" style="display:flex;align-items:center;gap:12px;margin-bottom:24px;"><span class="badge">Tentang</span><h2>Tentang Saya</h2></div><div class="grid two-col"><div class="card"><h3 style="font-size:1.2rem;font-weight:800;color:var(--primary);margin-bottom:12px;">'+escapeAttr(a.name)+'</h3><p style="color:var(--text-mid);">'+escapeAttr(a.bio||"")+'</p>'+stats+'</div></div></div></section>'+
-    '<section class="section" id="keterampilan"><div style="max-width:1100px;margin:0 auto;padding:0 24px;"><div class="section-head" style="display:flex;align-items:center;gap:12px;margin-bottom:24px;"><span class="badge">Keterampilan</span><h2>Keterampilan</h2></div><div class="skills-grid">'+skills+'</div></div></section>'+
-    '<section class="section" id="proyek"><div style="max-width:1100px;margin:0 auto;padding:0 24px;"><div class="section-head" style="display:flex;align-items:center;gap:12px;margin-bottom:24px;"><span class="badge">Proyek</span><h2>Proyek</h2></div><div class="grid" style="gap:22px;">'+projects+'</div></div></section>'+
-    '<section class="section" id="pengalaman"><div style="max-width:1100px;margin:0 auto;padding:0 24px;"><div class="section-head" style="display:flex;align-items:center;gap:12px;margin-bottom:24px;"><span class="badge">Pengalaman</span><h2>Pengalaman</h2></div><div class="grid" style="gap:22px;">'+experiences+'</div></div></section>'+
-    '<section class="section" id="kontak"><div style="max-width:1100px;margin:0 auto;padding:0 24px;"><div class="section-head" style="display:flex;align-items:center;gap:12px;margin-bottom:24px;"><span class="badge">Kontak</span><h2>Kontak</h2></div><div class="grid" style="grid-template-columns:repeat(2,1fr);gap:20px;">'+contactHtml+'</div></div></section>'+
-    '<footer class="footer" style="border-radius:var(--radius-sm);"><div style="max-width:1100px;margin:0 auto;padding:0 24px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;"><span class="copyright">© 2026 '+escapeAttr(s.title)+'. All rights reserved.</span><span style="font-size:.82rem;opacity:.7;">Admin: admin.html</span></div></footer>'
-  );
-}
+<footer class="footer"><div class="copyright">© 2026 Wisnu Pandu Hidayat. All rights reserved.</div></footer>
 
-function toast(msg, type){
-  var t=$('toast');
-  t.textContent=msg;
-  t.className='toast '+(type||'info')+' show';
-  clearTimeout(t._timer);
-  t._timer=setTimeout(function(){ t.className='toast'; }, 3200);
-}
-
-function pushToGitHub(token){
-  var owner=$('ghOwner').value.trim()||'MasWisnu8';
-  var repo=$('ghRepo').value.trim()||'Wisnu-Pandu';
-  var branch=$('ghBranch').value.trim()||'main';
-  var url='https://api.github.com/repos/'+encodeURIComponent(owner)+'/'+encodeURIComponent(repo)+'/contents/data.js?ref='+encodeURIComponent(branch);
-  var data={message:'Update data dari admin panel',content:btoa(unescape(encodeURIComponent(JSON.stringify(SITE,null,2)))),branch:branch};
-  fetch(url,{method:'PUT',headers:{'Authorization':'***'+token,'User-Agent':'wisnu-admin-panel','Accept':'application/vnd.github+json'},body:JSON.stringify(data)})
-  .then(function(r){ if(r.ok) return r.json().then(function(j){return {ok:true,msg:'Commit: '+j.commit.url};}); if(r.status===404) return Promise.reject('Repo tidak ditemukan.'); if(r.status===401||r.status===403) return Promise.reject('Token tidak sah.'); return Promise.reject('GitHub menolak (HTTP '+r.status+').'); })
-  .then(function(res){ toast(res.msg,'success'); })
-  .catch(function(err){ toast('Gagal: '+err,'error'); });
-}
-
-function doLogin(){
-  var pw=$('loginPassword').value;
-  if(pw===ADMIN_PASSWORD){
-    try{localStorage.setItem('admin_logged_in','true');}catch(e){}
-    $('loginScreen').style.display='none';
-    $('admin').className='admin open';
-    showSection('profile');
-  } else { toast('Password salah. Coba lagi.','error'); $('loginPassword').focus(); }
-}
-
-$('loginBtn').addEventListener('click',doLogin);
-$('cancelLoginBtn').addEventListener('click',function(){ $('loginScreen').style.display='none'; $('admin').className='admin open'; showSection('profile'); });
-$('loginPassword').addEventListener('keydown',function(e){ if(e.key==='Enter')doLogin(); });
-loadDraft();
-if(localStorage.getItem('admin_logged_in')==='true'){ $('loginScreen').style.display='none'; $('admin').className='admin open'; showSection('profile'); }
-else { showSection('profile'); }
-</script>
 </body>
 </html>
