@@ -599,7 +599,7 @@ function pushToGitHub(token){
   var branch=$('ghBranch').value.trim()||'main';
   var url='https://api.github.com/repos/'+encodeURIComponent(owner)+'/'+encodeURIComponent(repo)+'/contents/data.js?ref='+encodeURIComponent(branch);
   var data={message:'Update data dari admin panel',content:btoa(unescape(encodeURIComponent(JSON.stringify(SITE,null,2)))),branch:branch};
-  fetch(url,{method:'PUT',headers:{'Authorization':'***'+token,'User-Agent':'wisnu-admin-panel','Accept':'application/vnd.github+json'},body:JSON.stringify(data)})
+  fetch(url,{method:'PUT',headers:{'Authorization':'token '+token,'User-Agent':'wisnu-admin-panel','Accept':'application/vnd.github+json'},body:JSON.stringify(data)})
   .then(function(r){ if(r.ok) return r.json().then(function(j){return {ok:true,msg:'Commit: '+j.commit.url};}); if(r.status===404) return Promise.reject('Repo tidak ditemukan.'); if(r.status===401||r.status===403) return Promise.reject('Token tidak sah.'); return Promise.reject('GitHub menolak (HTTP '+r.status+').'); })
   .then(function(res){ toast(res.msg,'success'); })
   .catch(function(err){ toast('Gagal: '+err,'error'); });
