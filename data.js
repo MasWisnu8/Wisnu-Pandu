@@ -5,7 +5,8 @@ window.SITE = {
     tagline: "Membangun pengalaman digital yang cepat, rapi, dan digunakan orang.",
     name: "Wisnu Pandu Hidayat",
     role: "Production Manager",
-    imgAlt: "Wisnu Pandu Hidayat"
+    imgAlt: "Wisnu Pandu Hidayat",
+    photo: "images/avatar.jpg"
   },
   experience: [
     {
